@@ -1,30 +1,32 @@
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Audio Book Studio & E-Book Store</title>
-    <!-- Tailwind CSS for UI Design -->
+    <title id="app-title">AI Audio Book Studio & E-Book Store</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
 
-    <!-- Top Navigation Bar -->
+    <!-- Top Navigation Bar (Customer Store by Default, Owner is Hidden) -->
     <nav class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="showView('customer-store-view')">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="showCustomerView()">
                 <i data-lucide="book-open-check" class="text-indigo-500 w-7 h-7"></i>
-                <h1 class="text-xl font-extrabold text-white">AI E-Book Studio</h1>
+                <h1 class="text-xl font-extrabold text-white" id="nav-brand">AI E-Book Studio</h1>
             </div>
             
             <div class="flex gap-2">
-                <button onclick="showView('owner-login-view')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-md shadow-indigo-600/30">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i> Owner Portal
+                <!-- Customer Store Button -->
+                <button onclick="showCustomerView()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                    <i data-lucide="store" class="w-4 h-4"></i> <span data-i18n="store_btn">Customer Store</span>
                 </button>
-                <button onclick="showView('customer-store-view')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                    <i data-lucide="store" class="w-4 h-4"></i> Customer Store
+                <!-- Owner Portal Button (Hidden from regular customer view unless clicked) -->
+                <button onclick="showOwnerLogin()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-md shadow-indigo-600/30">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i> <span data-i18n="owner_btn">Owner Portal</span>
                 </button>
             </div>
         </div>
@@ -32,11 +34,11 @@
 
     <main class="max-w-5xl mx-auto p-4 md:p-8">
 
-        <!-- ==================== 1. OWNER LOGIN VIEW ==================== -->
-        <section id="owner-login-view" class="max-w-md mx-auto bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+        <!-- ==================== 1. OWNER LOGIN VIEW (HIDDEN INITIALLY) ==================== -->
+        <section id="owner-login-view" class="hidden max-w-md mx-auto bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <h2 class="text-2xl font-bold text-white">Owner Portal Login</h2>
-                <p class="text-xs text-slate-400">అడ్మిన్ డ్యాష్‌బోర్డ్ కొరకు లాగిన్ అవ్వండి</p>
+                <p class="text-xs text-slate-400">Restricted access for store owner only</p>
             </div>
 
             <div class="space-y-4">
@@ -51,6 +53,7 @@
 
                 <div class="flex justify-between items-center text-xs">
                     <button onclick="openForgotModal()" class="text-indigo-400 hover:underline">Forgot Password?</button>
+                    <button onclick="showCustomerView()" class="text-slate-400 hover:underline">Back to Store</button>
                 </div>
 
                 <button onclick="handleOwnerLogin()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-sm shadow-lg shadow-indigo-600/30 transition">
@@ -63,7 +66,7 @@
         <div id="forgot-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
             <div class="bg-slate-900 border border-slate-800 max-w-sm w-full p-6 rounded-3xl space-y-4">
                 <h3 class="text-lg font-bold text-white">Reset Owner Password</h3>
-                <p class="text-xs text-slate-400">OTP <b>jayashankar9381@gmail.com</b> కి పంపబడింది. (డెమో OTP: <b>938100</b>)</p>
+                <p class="text-xs text-slate-400">OTP sent to <b>jayashankar9381@gmail.com</b>. (Demo OTP: <b>938100</b>)</p>
 
                 <input type="text" id="otp-input" placeholder="Enter OTP (938100)" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
                 <input type="password" id="new-pin-1" placeholder="New Password / PIN" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
@@ -81,21 +84,21 @@
             <div class="flex justify-between items-center border-b border-slate-800 pb-4">
                 <div>
                     <h2 class="text-2xl font-bold text-white">Owner Management Board</h2>
-                    <p class="text-xs text-slate-400">కొత్త బుక్స్ సపరేట్‌గా అప్‌లోడ్ చేయండి మరియు కస్టమర్ కౌంట్ ట్రాక్ చేయండి</p>
+                    <p class="text-xs text-slate-400">Upload separate books and track customer reads</p>
                 </div>
-                <button onclick="showView('owner-login-view')" class="px-3 py-1.5 bg-red-500/20 text-red-400 text-xs font-bold rounded-lg border border-red-500/30">Logout</button>
+                <button onclick="showCustomerView()" class="px-3 py-1.5 bg-red-500/20 text-red-400 text-xs font-bold rounded-lg border border-red-500/30">Logout / Exit</button>
             </div>
 
             <!-- Upload Separate Book Form -->
             <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-4">
                 <h3 class="text-lg font-bold text-indigo-400 flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i> కొత్త పుస్తకం అప్‌లోడ్ చేయండి (Create New Separate Book)
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Publish New Separate Book
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Book Title (యూనిక్ పేరు)</label>
-                        <input type="text" id="book-title" placeholder="ఉదా: తెనాలి రామకృష్ణ కథలు" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Book Title (Unique)</label>
+                        <input type="text" id="book-title" placeholder="e.g. Tenali Raman Stories" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">Price (₹)</label>
@@ -109,8 +112,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Book Content (పుస్తక సారాంశం / టెక్స్ట్)</label>
-                    <textarea id="book-content" rows="5" placeholder="పుస్తకంలో ఉండే కంటెంట్‌ని ఇక్కడ ఎంటర్ చేయండి..." class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm"></textarea>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Book Content / Summary</label>
+                    <textarea id="book-content" rows="5" placeholder="Enter book contents here..." class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm"></textarea>
                 </div>
 
                 <button onclick="saveBook()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-sm shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
@@ -120,40 +123,40 @@
 
             <!-- Published Separate Books Analytics -->
             <div class="space-y-4">
-                <h3 class="text-lg font-bold text-white">అప్‌లోడ్ చేసిన విడివిడి పుస్తకాల లిస్ట్</h3>
+                <h3 class="text-lg font-bold text-white">Published Books List</h3>
                 <div id="owner-books-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Books Rendered Here -->
                 </div>
             </div>
         </section>
 
-        <!-- ==================== 3. CUSTOMER STORE VIEW ==================== -->
+        <!-- ==================== 3. CUSTOMER STORE VIEW (DEFAULT) ==================== -->
         <section id="customer-store-view" class="space-y-6">
-            <!-- Language Selector Bar -->
+            <!-- Language Selector Bar (Instant Auto Language Switcher) -->
             <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-2">
                     <i data-lucide="globe" class="text-indigo-400 w-5 h-5"></i>
-                    <span class="text-xs font-bold text-slate-300">యాప్ భాష (Interface Language):</span>
-                    <select id="ui-lang" class="bg-slate-950 border border-slate-700 p-2 rounded-xl text-xs text-indigo-300 font-bold">
+                    <span class="text-xs font-bold text-slate-300" data-i18n="select_lang">Interface Language:</span>
+                    <select id="ui-lang" onchange="changeInterfaceLanguage()" class="bg-slate-950 border border-slate-700 p-2 rounded-xl text-xs text-indigo-300 font-bold">
+                        <option value="en" selected>English (Default)</option>
                         <option value="te">తెలుగు (Telugu)</option>
                         <option value="hi">हिंदी (Hindi)</option>
                         <option value="ta">தமிழ் (Tamil)</option>
                         <option value="kn">ಕನ್ನಡ (Kannada)</option>
                         <option value="ml">മലയാളം (Malayalam)</option>
-                        <option value="en">English (US)</option>
                     </select>
                 </div>
 
                 <!-- Google Login Simulation -->
                 <button onclick="googleLogin()" class="px-4 py-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-xl text-xs font-bold flex items-center gap-2">
-                    <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i> <span id="user-status">Google తో లాగిన్ అవ్వండి</span>
+                    <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i> <span id="user-status">Sign in with Google</span>
                 </button>
             </div>
 
             <!-- Search Bar -->
             <div class="relative">
                 <i data-lucide="search" class="absolute left-4 top-3.5 text-slate-500 w-5 h-5"></i>
-                <input type="text" id="search-input" onkeyup="filterBooks()" placeholder="ఏ పుస్తకం కావాలో వెతకండి (Search books)..." class="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <input type="text" id="search-input" onkeyup="filterBooks()" placeholder="Search books by title..." class="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
 
             <!-- Customer Store Grid -->
@@ -167,16 +170,16 @@
             <div class="bg-slate-900 border border-slate-800 max-w-sm w-full p-6 rounded-3xl space-y-4 text-center">
                 <i data-lucide="lock" class="w-12 h-12 text-amber-400 mx-auto"></i>
                 <h3 id="pay-book-title" class="text-lg font-bold text-white"></h3>
-                <p class="text-xs text-slate-400">ఈ పుస్తకాన్ని అన్‌లాక్ చేయడానికి పేమెంట్ అమౌంట్ చెల్లించండి.</p>
+                <p class="text-xs text-slate-400" data-i18n="pay_desc">Complete payment to unlock and read/listen this book.</p>
 
                 <div class="text-3xl font-extrabold text-emerald-400" id="pay-book-price"></div>
 
                 <div class="flex flex-col gap-2 pt-2">
                     <a id="pay-now-btn" href="#" target="_blank" onclick="confirmPaymentSuccess()" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-                        <i data-lucide="credit-card" class="w-4 h-4"></i> Pay Amount (అమౌంట్ పే చేయండి)
+                        <i data-lucide="credit-card" class="w-4 h-4"></i> <span data-i18n="pay_amount_btn">Pay Amount</span>
                     </a>
-                    <button onclick="closePayModal()" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700">
-                        Cancel (క్యాన్సిల్)
+                    <button onclick="closePayModal()" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700" data-i18n="cancel_btn">
+                        Cancel
                     </button>
                 </div>
             </div>
@@ -196,25 +199,25 @@
                     </button>
                 </div>
 
-                <!-- Multilingual & Reading / Listening Mode Selection -->
+                <!-- Voice Language & Reading / Listening Mode Selection -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950 p-4 rounded-2xl border border-slate-800">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1">వాయిస్ భాష (Audio Language):</label>
+                        <label class="block text-xs font-bold text-slate-400 mb-1" data-i18n="audio_lang_label">Audio Voice Language:</label>
                         <select id="audio-lang" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-indigo-300 font-bold">
-                            <option value="te-IN">తెలుగు (Telugu)</option>
-                            <option value="hi-IN">हिंदी (Hindi)</option>
-                            <option value="ta-IN">தமிழ் (Tamil)</option>
-                            <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
-                            <option value="ml-IN">മലയാളം (Malayalam)</option>
-                            <option value="en-US">English (US)</option>
+                            <option value="en-US" selected>English (US)</option>
+                            <option value="te-IN">Telugu (తెలుగు)</option>
+                            <option value="hi-IN">Hindi (हिंदी)</option>
+                            <option value="ta-IN">Tamil (தமிழ்)</option>
+                            <option value="kn-IN">Kannada (ಕನ್ನಡ)</option>
+                            <option value="ml-IN">Malayalam (മലയാളം)</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1">కస్టమర్ మోడ్ (Mode):</label>
+                        <label class="block text-xs font-bold text-slate-400 mb-1" data-i18n="mode_label">Customer Mode:</label>
                         <div class="flex gap-2">
-                            <button id="btn-mode-read" onclick="setMode('read')" class="flex-1 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">📖 Reading (చదవడం)</button>
-                            <button id="btn-mode-listen" onclick="setMode('listen')" class="flex-1 py-2 bg-slate-800 text-slate-400 rounded-xl text-xs font-bold">🎧 Audio (వినడం)</button>
+                            <button id="btn-mode-read" onclick="setMode('read')" class="flex-1 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold" data-i18n="reading_mode">📖 Reading</button>
+                            <button id="btn-mode-listen" onclick="setMode('listen')" class="flex-1 py-2 bg-slate-800 text-slate-400 rounded-xl text-xs font-bold" data-i18n="listening_mode">🎧 Audio Listening</button>
                         </div>
                     </div>
                 </div>
@@ -224,7 +227,7 @@
                     <p id="reader-content-text" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"></p>
                 </div>
 
-                <!-- Advanced Audio Controls with 10s Backward / Forward Skipping -->
+                <!-- Advanced Audio Controls with -10s / +10s Skipping -->
                 <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
                     <div class="flex items-center justify-center gap-4">
                         <!-- -10 Sec Skipping Button -->
@@ -246,7 +249,7 @@
                     <div class="flex justify-between items-center pt-2 border-t border-slate-900">
                         <span id="audio-status" class="text-xs text-indigo-400 font-semibold">Audio Player Ready</span>
                         <button onclick="shareBook()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold flex items-center gap-1 text-slate-300">
-                            <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Share Book
+                            <i data-lucide="share-2" class="w-3.5 h-3.5"></i> <span data-i18n="share_btn">Share Book</span>
                         </button>
                     </div>
                 </div>
@@ -257,23 +260,14 @@
 
     <script>
         let currentOwnerPin = "9381";
-        // LocalStorage ద్వారా ప్రతీ బుక్ సపరేట్‌గా స్టోర్ అవుతుంది
         let books = JSON.parse(localStorage.getItem('published_books')) || [
             {
                 id: 1,
-                title: "తెలుగు AI కథలు",
+                title: "AI & Future Stories",
                 price: 199,
                 paylink: "https://upi.link/pay-demo",
-                content: "ఇది ఒక అద్భుతమైన AI ఆడియో పుస్తకం. మీరు దీనిని స్పష్టంగా చదవవచ్చు మరియు ఏ భాషలోనైనా వినవచ్చు.",
+                content: "This is an amazing AI audio book. You can read it clearly or listen in any selected Indian language.",
                 readersCount: 8
-            },
-            {
-                id: 2,
-                title: "తెనాలి రామకృష్ణ హాస్య కథలు",
-                price: 299,
-                paylink: "https://upi.link/pay-demo-2",
-                content: "విజయనగర సామ్రాజ్యంలో తెనాలి రామకృష్ణుని బుద్ధికుశలతను తెలియజేసే కథల సమాహారం.",
-                readersCount: 15
             }
         ];
 
@@ -281,17 +275,119 @@
         let selectedBookForRead = null;
         let currentCharIndex = 0;
 
+        // Instant Multi-language Translations Dictionary (English First)
+        const translations = {
+            en: {
+                store_btn: "Customer Store",
+                owner_btn: "Owner Portal",
+                select_lang: "Interface Language:",
+                search_placeholder: "Search books by title...",
+                lock_text: "Content is locked. Pay amount to unlock.",
+                pay_amount_btn: "Pay Amount",
+                cancel_btn: "Cancel",
+                pay_desc: "Complete payment to unlock and read/listen this book.",
+                audio_lang_label: "Audio Voice Language:",
+                mode_label: "Customer Mode:",
+                reading_mode: "📖 Reading",
+                listening_mode: "🎧 Audio Listening",
+                share_btn: "Share Book"
+            },
+            te: {
+                store_btn: "కస్టమర్ స్టోర్",
+                owner_btn: "ఓనర్ పోర్టల్",
+                select_lang: "స్క్రీన్ భాష:",
+                search_placeholder: "పుస్తకం పేరుతో వెతకండి...",
+                lock_text: "లాక్ చేయబడింది. పేమెంట్ చేసి అన్‌లాక్ చేయండి.",
+                pay_amount_btn: "అమౌంట్ పే చేయండి",
+                cancel_btn: "క్యాన్సిల్",
+                pay_desc: "ఈ పుస్తకాన్ని అన్‌లాక్ చేయడానికి పేమెంట్ అమౌంట్ చెల్లించండి.",
+                audio_lang_label: "వాయిస్ భాష:",
+                mode_label: "మోడ్:",
+                reading_mode: "📖 చదవడం (Reading)",
+                listening_mode: "🎧 వినడం (Audio)",
+                share_btn: "షేర్ చేయండి"
+            },
+            hi: {
+                store_btn: "कस्टमर स्टोर",
+                owner_btn: "ओनर पोर्टल",
+                select_lang: "स्क्रीन भाषा:",
+                search_placeholder: "किताब का नाम खोजें...",
+                lock_text: "सामग्री लॉक है। अनलॉक करने के लिए भुगतान करें।",
+                pay_amount_btn: "राशि का भुगतान करें",
+                cancel_btn: "रद्द करें",
+                pay_desc: "इस पुस्तक को अनलॉक करने के लिए भुगतान पूरा करें।",
+                audio_lang_label: "ऑडियो भाषा:",
+                mode_label: "मोड:",
+                reading_mode: "📖 पढ़ना (Reading)",
+                listening_mode: "🎧 सुनना (Listening)",
+                share_btn: "शेयर करें"
+            },
+            ta: {
+                store_btn: "வாடிக்கையாளர் கடை",
+                owner_btn: "உரிமையாளர் தளம்",
+                select_lang: "மொழி:",
+                search_placeholder: "புத்தகத்தைத் தேடுங்கள்...",
+                lock_text: "பூட்டப்பட்டுள்ளது. கட்டணம் செலுத்தி திறக்கவும்.",
+                pay_amount_btn: "பணம் செலுத்துக",
+                cancel_btn: "ரத்து செய்",
+                pay_desc: "இந்தப் புத்தகத்தைத் திறக்க கட்டணம் செலுத்தவும்.",
+                audio_lang_label: "ஒலி மொழி:",
+                mode_label: "முறை:",
+                reading_mode: "📖 வாசிப்பு",
+                listening_mode: "🎧 கேட்டல்",
+                share_btn: "பகிர்க"
+            },
+            kn: {
+                store_btn: "ಗ್ರಾಹಕ ಸ್ಟೋರ್",
+                owner_btn: "ಮಾಲೀಕ ಪೋರ್ಟಲ್",
+                select_lang: "ಭಾಷೆ:",
+                search_placeholder: "ಪುಸ್ತಕವನ್ನು ಹುಡುಕಿ...",
+                lock_text: "ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಪಾವತಿಸಿ ಅನ್ಲಾಕ್ ಮಾಡಿ.",
+                pay_amount_btn: "ಹಣ ಪಾವತಿಸಿ",
+                cancel_btn: "ರದ್ದುಮಾಡಿ",
+                pay_desc: "ಈ ಪುಸ್ತಕವನ್ನು ಅನ್ಲಾಕ್ ಮಾಡಲು ಹಣ ಪಾವತಿಸಿ.",
+                audio_lang_label: "ಧ್ವನಿ ಭಾಷೆ:",
+                mode_label: "ಮೋಡ್:",
+                reading_mode: "📖 ಓದುವುದು",
+                listening_mode: "🎧 ಆಲಿಸುವುದು",
+                share_btn: "ಹಂಚಿಕೊಳ್ಳಿ"
+            },
+            ml: {
+                store_btn: "കസ്റ്റമർ സ്റ്റോർ",
+                owner_btn: "ഓണർ പോർട്ടൽ",
+                select_lang: "ഭാഷ:",
+                search_placeholder: "പുസ്തകം തിരയുക...",
+                lock_text: "ലോക്ക് ചെയ്തിരിക്കുന്നു. പേയ്‌മെന്റ് ചെയ്യുക.",
+                pay_amount_btn: "തുക അടയ്ക്കുക",
+                cancel_btn: "റദ്ദാക്കുക",
+                pay_desc: "ഈ പുസ്തകം അൺലോക്ക് ചെയ്യാൻ തുക അടയ്ക്കുക.",
+                audio_lang_label: "ശബ്ദ ഭാഷ:",
+                mode_label: "മോഡ്:",
+                reading_mode: "📖 വായിക്കുക",
+                listening_mode: "🎧 കേൾക്കുക",
+                share_btn: "പങ്കിടുക"
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            renderOwnerBooks();
-            renderCustomerBooks();
+            showCustomerView(); // Defaults strictly to Customer Store view
         });
 
-        function showView(viewId) {
+        // VIEW CONTROLLERS (Strict Separation)
+        function showCustomerView() {
+            window.speechSynthesis.cancel();
             document.getElementById('owner-login-view').classList.add('hidden');
             document.getElementById('owner-dashboard-view').classList.add('hidden');
+            document.getElementById('customer-store-view').classList.remove('hidden');
+            renderCustomerBooks();
+        }
+
+        function showOwnerLogin() {
+            window.speechSynthesis.cancel();
             document.getElementById('customer-store-view').classList.add('hidden');
-            document.getElementById(viewId).classList.remove('hidden');
+            document.getElementById('owner-dashboard-view').classList.add('hidden');
+            document.getElementById('owner-login-view').classList.remove('hidden');
         }
 
         // 1. OWNER LOGIN & RESET
@@ -301,9 +397,11 @@
 
             if(email === "jayashankar9381@gmail.com" && pass === currentOwnerPin) {
                 alert("Login Success!");
-                showView('owner-dashboard-view');
+                document.getElementById('owner-login-view').classList.add('hidden');
+                document.getElementById('owner-dashboard-view').classList.remove('hidden');
+                renderOwnerBooks();
             } else {
-                alert("తప్పు వివరాలు! దయచేసి మళ్ళీ ప్రయత్నించండి.");
+                alert("Invalid Credentials! Please try again.");
             }
         }
 
@@ -316,16 +414,16 @@
             const p2 = document.getElementById('new-pin-2').value;
 
             if(otp !== "938100") {
-                alert("OTP తప్పు! (డెమో OTP: 938100)");
+                alert("Invalid OTP! (Demo OTP: 938100)");
                 return;
             }
             if(!p1 || p1 !== p2) {
-                alert("కొత్త PIN మ్యాచింగ్ లేదు!");
+                alert("New PINs do not match!");
                 return;
             }
 
             currentOwnerPin = p1;
-            alert("కొత్త PIN సేవ్ అయింది!");
+            alert("New PIN saved successfully!");
             closeForgotModal();
         }
 
@@ -337,7 +435,7 @@
             const content = document.getElementById('book-content').value.trim();
 
             if(!title || !price || !content) {
-                alert("అన్ని ఫీల్డ్స్ భర్తీ చేయండి!");
+                alert("Please fill all fields!");
                 return;
             }
 
@@ -358,9 +456,8 @@
             document.getElementById('book-paylink').value = "";
             document.getElementById('book-content').value = "";
 
-            alert("పుస్తకం సపరేట్‌గా సేవ్ అయింది!");
+            alert("Book saved separately!");
             renderOwnerBooks();
-            renderCustomerBooks();
         }
 
         function renderOwnerBooks() {
@@ -375,7 +472,7 @@
                         </div>
                         <p class="text-xs text-slate-400 line-clamp-2">${b.content}</p>
                         <div class="text-[11px] text-slate-500 pt-2 border-t border-slate-900">
-                            చదివిన కస్టమర్లు: <b class="text-white">${b.readersCount} మంది</b>
+                            Total Readers: <b class="text-white">${b.readersCount} customers</b>
                         </div>
                     </div>
                 `;
@@ -388,6 +485,8 @@
             grid.innerHTML = "";
 
             const filtered = books.filter(b => b.title.toLowerCase().includes(filterText.toLowerCase()));
+            const lang = document.getElementById('ui-lang').value;
+            const t = translations[lang] || translations['en'];
 
             filtered.forEach(b => {
                 grid.innerHTML += `
@@ -397,11 +496,11 @@
 
                         <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center space-y-1">
                             <i data-lucide="lock" class="w-5 h-5 text-amber-400 mx-auto"></i>
-                            <p class="text-[11px] text-slate-500">పేమెంట్ చేసిన తర్వాత బుక్ ఓపెన్ అవుతుంది</p>
+                            <p class="text-[11px] text-slate-500">${t.lock_text}</p>
                         </div>
 
-                        <button onclick="openPayModal(${b.id})" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1">
-                            <i data-lucide="credit-card" class="w-4 h-4"></i> అమౌంట్ పే చేయండి (Pay ₹${b.price})
+                        <button onclick="openPayModal(${b.id})" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1 shadow-lg shadow-indigo-600/30">
+                            <i data-lucide="credit-card" class="w-4 h-4"></i> ${t.pay_amount_btn} (₹${b.price})
                         </button>
                     </div>
                 `;
@@ -428,7 +527,6 @@
             closePayModal();
             selectedBookForPay.readersCount += 1;
             localStorage.setItem('published_books', JSON.stringify(books));
-            renderOwnerBooks();
             openReaderModal(selectedBookForPay);
         }
 
@@ -467,7 +565,7 @@
                     speakTextFrom(currentCharIndex);
                 }
             } else {
-                alert("బ్రౌజర్ ఆడియోను సపోర్ట్ చేయడం లేదు.");
+                alert("Speech synthesis not supported in your browser.");
             }
         }
 
@@ -493,26 +591,38 @@
         // 10-Second Skipping Logic (-10s / +10s)
         function skipAudio(seconds) {
             if (!selectedBookForRead) return;
-            
-            // 1 సెకనుకు సుమారు 15 క్యారెక్టర్లు అంచనా
             const charOffset = seconds * 15; 
             currentCharIndex = Math.max(0, currentCharIndex + charOffset);
             
             if (window.speechSynthesis.speaking) {
                 speakTextFrom(currentCharIndex);
             }
-            
             document.getElementById('audio-status').innerText = `${seconds > 0 ? '+' : ''}${seconds} Seconds Skipped`;
         }
 
         function shareBook() {
             navigator.clipboard.writeText(window.location.href);
-            alert("పుస్తకం లింక్ కాపీ చేయబడింది!");
+            alert("Book share link copied to clipboard!");
         }
 
-        function googleLogin() {
-            document.getElementById('user-status').innerText = "Google User (Logged In)";
-            alert("Google లాగిన్ పూర్తయింది!");
+        // INSTANT AUTO-LANGUAGE SWITCHER (Within Seconds)
+        function changeInterfaceLanguage() {
+            const lang = document.getElementById('ui-lang').value;
+            const t = translations[lang] || translations['en'];
+
+            // Update UI elements instantly
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerText = t[key];
+                }
+            });
+
+            const searchInput = document.getElementById('search-input');
+            if(searchInput) searchInput.placeholder = t.search_placeholder;
+
+            // Refresh books list to update lock texts
+            renderCustomerBooks(searchInput ? searchInput.value : "");
         }
     </script>
 </body>
