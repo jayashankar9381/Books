@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="app-title">AI Audio Book Studio & E-Book Store</title>
+    <title>AI Audio Book Studio & E-Book Store</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -11,22 +11,20 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
 
-    <!-- Top Navigation Bar (Customer Store by Default, Owner is Hidden) -->
+    <!-- Top Navigation Bar -->
     <nav class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2 cursor-pointer" onclick="showCustomerView()">
                 <i data-lucide="book-open-check" class="text-indigo-500 w-7 h-7"></i>
-                <h1 class="text-xl font-extrabold text-white" id="nav-brand">AI E-Book Studio</h1>
+                <h1 class="text-xl font-extrabold text-white">AI E-Book Studio</h1>
             </div>
             
             <div class="flex gap-2">
-                <!-- Customer Store Button -->
                 <button onclick="showCustomerView()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                    <i data-lucide="store" class="w-4 h-4"></i> <span data-i18n="store_btn">Customer Store</span>
+                    <i data-lucide="store" class="w-4 h-4"></i> Customer Store
                 </button>
-                <!-- Owner Portal Button (Hidden from regular customer view unless clicked) -->
                 <button onclick="showOwnerLogin()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-md shadow-indigo-600/30">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i> <span data-i18n="owner_btn">Owner Portal</span>
+                    <i data-lucide="shield-check" class="w-4 h-4"></i> Owner Portal
                 </button>
             </div>
         </div>
@@ -34,7 +32,7 @@
 
     <main class="max-w-5xl mx-auto p-4 md:p-8">
 
-        <!-- ==================== 1. OWNER LOGIN VIEW (HIDDEN INITIALLY) ==================== -->
+        <!-- ==================== 1. OWNER LOGIN VIEW ==================== -->
         <section id="owner-login-view" class="hidden max-w-md mx-auto bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <h2 class="text-2xl font-bold text-white">Owner Portal Login</h2>
@@ -66,7 +64,7 @@
         <div id="forgot-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
             <div class="bg-slate-900 border border-slate-800 max-w-sm w-full p-6 rounded-3xl space-y-4">
                 <h3 class="text-lg font-bold text-white">Reset Owner Password</h3>
-                <p class="text-xs text-slate-400">OTP sent to <b>jayashankar9381@gmail.com</b>. (Demo OTP: <b>938100</b>)</p>
+                <p class="text-xs text-slate-400">OTP sent to <b>jayashankar9381@gmail.com</b> (OTP: <b>938100</b>)</p>
 
                 <input type="text" id="otp-input" placeholder="Enter OTP (938100)" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
                 <input type="password" id="new-pin-1" placeholder="New Password / PIN" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
@@ -84,7 +82,7 @@
             <div class="flex justify-between items-center border-b border-slate-800 pb-4">
                 <div>
                     <h2 class="text-2xl font-bold text-white">Owner Management Board</h2>
-                    <p class="text-xs text-slate-400">Upload separate books and track customer reads</p>
+                    <p class="text-xs text-slate-400">Upload, delete books and track reader counts</p>
                 </div>
                 <button onclick="showCustomerView()" class="px-3 py-1.5 bg-red-500/20 text-red-400 text-xs font-bold rounded-lg border border-red-500/30">Logout / Exit</button>
             </div>
@@ -107,12 +105,12 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Payment Gateway / UPI Link</label>
-                    <input type="url" id="book-paylink" placeholder="https://upi.link/pay-owner" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Payment Gateway / PhonePe UPI Link / ID</label>
+                    <input type="text" id="book-paylink" placeholder="upi://pay?pa=owner@upi&pn=Owner" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Book Content / Summary</label>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Book Content / Text</label>
                     <textarea id="book-content" rows="5" placeholder="Enter book contents here..." class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm"></textarea>
                 </div>
 
@@ -121,22 +119,22 @@
                 </button>
             </div>
 
-            <!-- Published Separate Books Analytics -->
+            <!-- Published Books Analytics & Delete Action -->
             <div class="space-y-4">
-                <h3 class="text-lg font-bold text-white">Published Books List</h3>
+                <h3 class="text-lg font-bold text-white">Published Books Management</h3>
                 <div id="owner-books-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Books Rendered Here -->
+                    <!-- Dynamic Books with Delete Button -->
                 </div>
             </div>
         </section>
 
-        <!-- ==================== 3. CUSTOMER STORE VIEW (DEFAULT) ==================== -->
+        <!-- ==================== 3. CUSTOMER STORE VIEW ==================== -->
         <section id="customer-store-view" class="space-y-6">
-            <!-- Language Selector Bar (Instant Auto Language Switcher) -->
+            <!-- Language Selector Bar -->
             <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-2">
                     <i data-lucide="globe" class="text-indigo-400 w-5 h-5"></i>
-                    <span class="text-xs font-bold text-slate-300" data-i18n="select_lang">Interface Language:</span>
+                    <span class="text-xs font-bold text-slate-300">Interface Language:</span>
                     <select id="ui-lang" onchange="changeInterfaceLanguage()" class="bg-slate-950 border border-slate-700 p-2 rounded-xl text-xs text-indigo-300 font-bold">
                         <option value="en" selected>English (Default)</option>
                         <option value="te">తెలుగు (Telugu)</option>
@@ -147,7 +145,6 @@
                     </select>
                 </div>
 
-                <!-- Google Login Simulation -->
                 <button onclick="googleLogin()" class="px-4 py-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-xl text-xs font-bold flex items-center gap-2">
                     <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i> <span id="user-status">Sign in with Google</span>
                 </button>
@@ -161,63 +158,63 @@
 
             <!-- Customer Store Grid -->
             <div id="customer-books-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Dynamic Separate Books Rendered Here -->
+                <!-- Books Rendered Here -->
             </div>
         </section>
 
-        <!-- PAYMENT MODAL FOR CUSTOMER -->
+        <!-- PAYMENT MODAL FOR CUSTOMER WITH PHONEPE / UPI AUTO-OPEN -->
         <div id="payment-modal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">
             <div class="bg-slate-900 border border-slate-800 max-w-sm w-full p-6 rounded-3xl space-y-4 text-center">
                 <i data-lucide="lock" class="w-12 h-12 text-amber-400 mx-auto"></i>
                 <h3 id="pay-book-title" class="text-lg font-bold text-white"></h3>
-                <p class="text-xs text-slate-400" data-i18n="pay_desc">Complete payment to unlock and read/listen this book.</p>
+                <p class="text-xs text-slate-400">Pay amount to get <b>30 Days Full Access</b> (PhonePe / Google Pay / UPI).</p>
 
                 <div class="text-3xl font-extrabold text-emerald-400" id="pay-book-price"></div>
 
                 <div class="flex flex-col gap-2 pt-2">
-                    <a id="pay-now-btn" href="#" target="_blank" onclick="confirmPaymentSuccess()" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-                        <i data-lucide="credit-card" class="w-4 h-4"></i> <span data-i18n="pay_amount_btn">Pay Amount</span>
-                    </a>
-                    <button onclick="closePayModal()" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700" data-i18n="cancel_btn">
+                    <button onclick="triggerUPIPayment()" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                        <i data-lucide="smartphone" class="w-4 h-4"></i> Pay via PhonePe / UPI (30 Days)
+                    </button>
+                    <button onclick="closePayModal()" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700">
                         Cancel
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- UNLOCKED BOOK READER & SKIPPING AUDIO PLAYER MODAL -->
+        <!-- UNLOCKED BOOK READER MODAL -->
         <div id="reader-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 overflow-y-auto">
             <div class="bg-slate-900 border border-slate-800 max-w-2xl w-full p-6 rounded-3xl space-y-6 my-8">
                 <!-- Header -->
                 <div class="flex justify-between items-start border-b border-slate-800 pb-3">
                     <div>
                         <h3 id="reader-title" class="text-xl font-bold text-indigo-400"></h3>
-                        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold">Unlocked Book</span>
+                        <span id="validity-badge" class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold">30 Days Active Access</span>
                     </div>
                     <button onclick="closeReaderModal()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
 
-                <!-- Voice Language & Reading / Listening Mode Selection -->
+                <!-- Voice & Instant Language Switcher -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950 p-4 rounded-2xl border border-slate-800">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1" data-i18n="audio_lang_label">Audio Voice Language:</label>
-                        <select id="audio-lang" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-indigo-300 font-bold">
-                            <option value="en-US" selected>English (US)</option>
-                            <option value="te-IN">Telugu (తెలుగు)</option>
-                            <option value="hi-IN">Hindi (हिंदी)</option>
-                            <option value="ta-IN">Tamil (தமிழ்)</option>
-                            <option value="kn-IN">Kannada (ಕನ್ನಡ)</option>
-                            <option value="ml-IN">Malayalam (മലയാളം)</option>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Audio Voice & Language:</label>
+                        <select id="audio-lang" onchange="onLanguageOrVoiceChange()" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-indigo-300 font-bold">
+                            <option value="te-IN" selected>తెలుగు (Telugu)</option>
+                            <option value="hi-IN">हिंदी (Hindi)</option>
+                            <option value="en-US">English (US)</option>
+                            <option value="ta-IN">தமிழ் (Tamil)</option>
+                            <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
+                            <option value="ml-IN">മലയാളം (Malayalam)</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1" data-i18n="mode_label">Customer Mode:</label>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Customer Mode:</label>
                         <div class="flex gap-2">
-                            <button id="btn-mode-read" onclick="setMode('read')" class="flex-1 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold" data-i18n="reading_mode">📖 Reading</button>
-                            <button id="btn-mode-listen" onclick="setMode('listen')" class="flex-1 py-2 bg-slate-800 text-slate-400 rounded-xl text-xs font-bold" data-i18n="listening_mode">🎧 Audio Listening</button>
+                            <button id="btn-mode-read" onclick="setMode('read')" class="flex-1 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">📖 Reading</button>
+                            <button id="btn-mode-listen" onclick="setMode('listen')" class="flex-1 py-2 bg-slate-800 text-slate-400 rounded-xl text-xs font-bold">🎧 Listening</button>
                         </div>
                     </div>
                 </div>
@@ -227,20 +224,17 @@
                     <p id="reader-content-text" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"></p>
                 </div>
 
-                <!-- Advanced Audio Controls with -10s / +10s Skipping -->
+                <!-- Controls with Skipping and Native Share -->
                 <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
                     <div class="flex items-center justify-center gap-4">
-                        <!-- -10 Sec Skipping Button -->
                         <button onclick="skipAudio(-10)" class="p-3 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-xl text-xs font-bold flex items-center gap-1">
                             <i data-lucide="rotate-ccw" class="w-4 h-4"></i> -10s
                         </button>
 
-                        <!-- Play / Pause Button -->
                         <button onclick="toggleAudio()" id="play-btn" class="p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-lg shadow-indigo-600/30">
                             <i data-lucide="play" class="w-6 h-6"></i>
                         </button>
 
-                        <!-- +10 Sec Skipping Button -->
                         <button onclick="skipAudio(10)" class="p-3 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-xl text-xs font-bold flex items-center gap-1">
                             +10s <i data-lucide="rotate-cw" class="w-4 h-4"></i>
                         </button>
@@ -248,8 +242,8 @@
 
                     <div class="flex justify-between items-center pt-2 border-t border-slate-900">
                         <span id="audio-status" class="text-xs text-indigo-400 font-semibold">Audio Player Ready</span>
-                        <button onclick="shareBook()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold flex items-center gap-1 text-slate-300">
-                            <i data-lucide="share-2" class="w-3.5 h-3.5"></i> <span data-i18n="share_btn">Share Book</span>
+                        <button onclick="perfectShareBook()" class="px-3.5 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                            <i data-lucide="share-2" class="w-4 h-4"></i> Share Book
                         </button>
                     </div>
                 </div>
@@ -265,116 +259,24 @@
                 id: 1,
                 title: "AI & Future Stories",
                 price: 199,
-                paylink: "https://upi.link/pay-demo",
-                content: "This is an amazing AI audio book. You can read it clearly or listen in any selected Indian language.",
-                readersCount: 8
+                paylink: "upi://pay?pa=jayashankar9381@ybl&pn=Jayashankar&am=199&cu=INR",
+                content: "ఇది ఒక అద్భుతమైన AI ఆడియో పుస్తకం. మీరు దీనిని నేరుగా చదవవచ్చు మరియు ఏ భారతీయ భాషలోనైనా వెంటనే ఆటోమేటిక్‌గా వినవచ్చు.",
+                readersCount: 11
             }
         ];
+
+        // 30 Days Expiry Access Manager Storage
+        let userPurchases = JSON.parse(localStorage.getItem('user_purchases')) || {};
 
         let selectedBookForPay = null;
         let selectedBookForRead = null;
         let currentCharIndex = 0;
 
-        // Instant Multi-language Translations Dictionary (English First)
-        const translations = {
-            en: {
-                store_btn: "Customer Store",
-                owner_btn: "Owner Portal",
-                select_lang: "Interface Language:",
-                search_placeholder: "Search books by title...",
-                lock_text: "Content is locked. Pay amount to unlock.",
-                pay_amount_btn: "Pay Amount",
-                cancel_btn: "Cancel",
-                pay_desc: "Complete payment to unlock and read/listen this book.",
-                audio_lang_label: "Audio Voice Language:",
-                mode_label: "Customer Mode:",
-                reading_mode: "📖 Reading",
-                listening_mode: "🎧 Audio Listening",
-                share_btn: "Share Book"
-            },
-            te: {
-                store_btn: "కస్టమర్ స్టోర్",
-                owner_btn: "ఓనర్ పోర్టల్",
-                select_lang: "స్క్రీన్ భాష:",
-                search_placeholder: "పుస్తకం పేరుతో వెతకండి...",
-                lock_text: "లాక్ చేయబడింది. పేమెంట్ చేసి అన్‌లాక్ చేయండి.",
-                pay_amount_btn: "అమౌంట్ పే చేయండి",
-                cancel_btn: "క్యాన్సిల్",
-                pay_desc: "ఈ పుస్తకాన్ని అన్‌లాక్ చేయడానికి పేమెంట్ అమౌంట్ చెల్లించండి.",
-                audio_lang_label: "వాయిస్ భాష:",
-                mode_label: "మోడ్:",
-                reading_mode: "📖 చదవడం (Reading)",
-                listening_mode: "🎧 వినడం (Audio)",
-                share_btn: "షేర్ చేయండి"
-            },
-            hi: {
-                store_btn: "कस्टमर स्टोर",
-                owner_btn: "ओनर पोर्टल",
-                select_lang: "स्क्रीन भाषा:",
-                search_placeholder: "किताब का नाम खोजें...",
-                lock_text: "सामग्री लॉक है। अनलॉक करने के लिए भुगतान करें।",
-                pay_amount_btn: "राशि का भुगतान करें",
-                cancel_btn: "रद्द करें",
-                pay_desc: "इस पुस्तक को अनलॉक करने के लिए भुगतान पूरा करें।",
-                audio_lang_label: "ऑडियो भाषा:",
-                mode_label: "मोड:",
-                reading_mode: "📖 पढ़ना (Reading)",
-                listening_mode: "🎧 सुनना (Listening)",
-                share_btn: "शेयर करें"
-            },
-            ta: {
-                store_btn: "வாடிக்கையாளர் கடை",
-                owner_btn: "உரிமையாளர் தளம்",
-                select_lang: "மொழி:",
-                search_placeholder: "புத்தகத்தைத் தேடுங்கள்...",
-                lock_text: "பூட்டப்பட்டுள்ளது. கட்டணம் செலுத்தி திறக்கவும்.",
-                pay_amount_btn: "பணம் செலுத்துக",
-                cancel_btn: "ரத்து செய்",
-                pay_desc: "இந்தப் புத்தகத்தைத் திறக்க கட்டணம் செலுத்தவும்.",
-                audio_lang_label: "ஒலி மொழி:",
-                mode_label: "முறை:",
-                reading_mode: "📖 வாசிப்பு",
-                listening_mode: "🎧 கேட்டல்",
-                share_btn: "பகிர்க"
-            },
-            kn: {
-                store_btn: "ಗ್ರಾಹಕ ಸ್ಟೋರ್",
-                owner_btn: "ಮಾಲೀಕ ಪೋರ್ಟಲ್",
-                select_lang: "ಭಾಷೆ:",
-                search_placeholder: "ಪುಸ್ತಕವನ್ನು ಹುಡುಕಿ...",
-                lock_text: "ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಪಾವತಿಸಿ ಅನ್ಲಾಕ್ ಮಾಡಿ.",
-                pay_amount_btn: "ಹಣ ಪಾವತಿಸಿ",
-                cancel_btn: "ರದ್ದುಮಾಡಿ",
-                pay_desc: "ಈ ಪುಸ್ತಕವನ್ನು ಅನ್ಲಾಕ್ ಮಾಡಲು ಹಣ ಪಾವತಿಸಿ.",
-                audio_lang_label: "ಧ್ವನಿ ಭಾಷೆ:",
-                mode_label: "ಮೋಡ್:",
-                reading_mode: "📖 ಓದುವುದು",
-                listening_mode: "🎧 ಆಲಿಸುವುದು",
-                share_btn: "ಹಂಚಿಕೊಳ್ಳಿ"
-            },
-            ml: {
-                store_btn: "കസ്റ്റമർ സ്റ്റോർ",
-                owner_btn: "ഓണർ പോർട്ടൽ",
-                select_lang: "ഭാഷ:",
-                search_placeholder: "പുസ്തകം തിരയുക...",
-                lock_text: "ലോക്ക് ചെയ്തിരിക്കുന്നു. പേയ്‌മെന്റ് ചെയ്യുക.",
-                pay_amount_btn: "തുക അടയ്ക്കുക",
-                cancel_btn: "റദ്ദാക്കുക",
-                pay_desc: "ഈ പുസ്തകം അൺലോക്ക് ചെയ്യാൻ തുക അടയ്ക്കുക.",
-                audio_lang_label: "ശബ്ദ ഭാഷ:",
-                mode_label: "മോഡ്:",
-                reading_mode: "📖 വായിക്കുക",
-                listening_mode: "🎧 കേൾക്കുക",
-                share_btn: "പങ്കിടുക"
-            }
-        };
-
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            showCustomerView(); // Defaults strictly to Customer Store view
+            showCustomerView();
         });
 
-        // VIEW CONTROLLERS (Strict Separation)
         function showCustomerView() {
             window.speechSynthesis.cancel();
             document.getElementById('owner-login-view').classList.add('hidden');
@@ -390,7 +292,6 @@
             document.getElementById('owner-login-view').classList.remove('hidden');
         }
 
-        // 1. OWNER LOGIN & RESET
         function handleOwnerLogin() {
             const email = document.getElementById('owner-email').value;
             const pass = document.getElementById('owner-pass').value;
@@ -401,7 +302,7 @@
                 document.getElementById('owner-dashboard-view').classList.remove('hidden');
                 renderOwnerBooks();
             } else {
-                alert("Invalid Credentials! Please try again.");
+                alert("Invalid Credentials!");
             }
         }
 
@@ -413,37 +314,35 @@
             const p1 = document.getElementById('new-pin-1').value;
             const p2 = document.getElementById('new-pin-2').value;
 
-            if(otp !== "938100") {
-                alert("Invalid OTP! (Demo OTP: 938100)");
-                return;
-            }
-            if(!p1 || p1 !== p2) {
-                alert("New PINs do not match!");
-                return;
-            }
+            if(otp !== "938100") { alert("Invalid OTP!"); return; }
+            if(!p1 || p1 !== p2) { alert("PINs do not match!"); return; }
 
             currentOwnerPin = p1;
             alert("New PIN saved successfully!");
             closeForgotModal();
         }
 
-        // 2. SAVE SEPARATE BOOK
+        // SAVE BOOK
         function saveBook() {
             const title = document.getElementById('book-title').value.trim();
             const price = document.getElementById('book-price').value;
-            const paylink = document.getElementById('book-paylink').value.trim();
+            let paylink = document.getElementById('book-paylink').value.trim();
             const content = document.getElementById('book-content').value.trim();
 
             if(!title || !price || !content) {
-                alert("Please fill all fields!");
+                alert("Please fill all required fields!");
                 return;
+            }
+
+            if(!paylink.startsWith("upi://")) {
+                paylink = `upi://pay?pa=jayashankar9381@ybl&pn=Jayashankar&am=${price}&cu=INR`;
             }
 
             const newBook = {
                 id: Date.now(),
                 title,
                 price,
-                paylink: paylink || "#",
+                paylink,
                 content,
                 readersCount: 0
             };
@@ -456,8 +355,18 @@
             document.getElementById('book-paylink').value = "";
             document.getElementById('book-content').value = "";
 
-            alert("Book saved separately!");
+            alert("Book saved successfully!");
             renderOwnerBooks();
+        }
+
+        // OWNER DELETE BOOK ACTION & READERS TRACKING
+        function deleteBook(bookId) {
+            if(confirm("ఈ పుస్తకాన్ని ఖచ్చితంగా డిలీట్ చేయాలనుకుంటున్నారా?")) {
+                books = books.filter(b => b.id !== bookId);
+                localStorage.setItem('published_books', JSON.stringify(books));
+                renderOwnerBooks();
+                alert("పుస్తకం డిలీట్ చేయబడింది!");
+            }
         }
 
         function renderOwnerBooks() {
@@ -465,43 +374,61 @@
             list.innerHTML = "";
             books.forEach(b => {
                 list.innerHTML += `
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
-                        <div class="flex justify-between font-bold">
-                            <span class="text-indigo-400">${b.title}</span>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                        <div class="flex justify-between font-bold items-center">
+                            <span class="text-indigo-400 text-base">${b.title}</span>
                             <span class="text-emerald-400">₹${b.price}</span>
                         </div>
                         <p class="text-xs text-slate-400 line-clamp-2">${b.content}</p>
-                        <div class="text-[11px] text-slate-500 pt-2 border-t border-slate-900">
-                            Total Readers: <b class="text-white">${b.readersCount} customers</b>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-900">
+                            <span class="text-xs text-slate-400">Total Readers: <b class="text-white font-bold">${b.readersCount} customers</b></span>
+                            <button onclick="deleteBook(${b.id})" class="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-bold rounded-lg border border-red-500/30 flex items-center gap-1">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
+                            </button>
                         </div>
                     </div>
                 `;
             });
+            lucide.createIcons();
         }
 
-        // 3. CUSTOMER STORE & PAYWALL
+        // 3. CUSTOMER STORE & 30 DAYS ACCESS VALIDITY CHECK
+        function isBookAccessActive(bookId) {
+            const expiryTimestamp = userPurchases[bookId];
+            if (!expiryTimestamp) return false;
+            return Date.now() < expiryTimestamp; // Active for 30 Days
+        }
+
         function renderCustomerBooks(filterText = "") {
             const grid = document.getElementById('customer-books-grid');
             grid.innerHTML = "";
-
             const filtered = books.filter(b => b.title.toLowerCase().includes(filterText.toLowerCase()));
-            const lang = document.getElementById('ui-lang').value;
-            const t = translations[lang] || translations['en'];
 
             filtered.forEach(b => {
+                const hasAccess = isBookAccessActive(b.id);
                 grid.innerHTML += `
                     <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl space-y-4">
-                        <h4 class="font-bold text-white text-lg">${b.title}</h4>
-                        <div class="text-emerald-400 font-extrabold text-sm">₹${b.price}</div>
-
-                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center space-y-1">
-                            <i data-lucide="lock" class="w-5 h-5 text-amber-400 mx-auto"></i>
-                            <p class="text-[11px] text-slate-500">${t.lock_text}</p>
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-white text-lg">${b.title}</h4>
+                            <span class="text-emerald-400 font-extrabold text-sm">₹${b.price}</span>
                         </div>
 
-                        <button onclick="openPayModal(${b.id})" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1 shadow-lg shadow-indigo-600/30">
-                            <i data-lucide="credit-card" class="w-4 h-4"></i> ${t.pay_amount_btn} (₹${b.price})
-                        </button>
+                        ${hasAccess ? `
+                            <div class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-2xl text-center">
+                                <span class="text-xs text-emerald-400 font-bold">✅ 30 Days Active Subscription</span>
+                            </div>
+                            <button onclick="openUnlockedBook(${b.id})" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1 shadow-lg shadow-emerald-600/30">
+                                <i data-lucide="book-open" class="w-4 h-4"></i> Open & Read/Listen
+                            </button>
+                        ` : `
+                            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center space-y-1">
+                                <i data-lucide="lock" class="w-5 h-5 text-amber-400 mx-auto"></i>
+                                <p class="text-[11px] text-slate-500">Pay once to get 30 Days Full Access</p>
+                            </div>
+                            <button onclick="openPayModal(${b.id})" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1 shadow-lg shadow-indigo-600/30">
+                                <i data-lucide="credit-card" class="w-4 h-4"></i> Pay Amount (₹${b.price})
+                            </button>
+                        `}
                     </div>
                 `;
             });
@@ -509,29 +436,42 @@
         }
 
         function filterBooks() {
-            const txt = document.getElementById('search-input').value;
-            renderCustomerBooks(txt);
+            renderCustomerBooks(document.getElementById('search-input').value);
         }
 
         function openPayModal(bookId) {
             selectedBookForPay = books.find(b => b.id === bookId);
             document.getElementById('pay-book-title').innerText = selectedBookForPay.title;
             document.getElementById('pay-book-price').innerText = `₹${selectedBookForPay.price}`;
-            document.getElementById('pay-now-btn').href = selectedBookForPay.paylink;
             document.getElementById('payment-modal').classList.remove('hidden');
         }
 
         function closePayModal() { document.getElementById('payment-modal').classList.add('hidden'); }
 
-        function confirmPaymentSuccess() {
+        // AUTOMATIC PHONEPE / UPI OPEN & 30 DAYS ACCESS SET
+        function triggerUPIPayment() {
             closePayModal();
+            // PhonePe / UPI Dynamic Intent
+            window.location.href = selectedBookForPay.paylink;
+
+            // 30 Days Expiry Timestamp setup (30 days * 24 * 60 * 60 * 1000)
+            const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+            userPurchases[selectedBookForPay.id] = Date.now() + thirtyDaysMs;
+            localStorage.setItem('user_purchases', JSON.stringify(userPurchases));
+
+            // Increase reader count for owner board
             selectedBookForPay.readersCount += 1;
             localStorage.setItem('published_books', JSON.stringify(books));
-            openReaderModal(selectedBookForPay);
+
+            setTimeout(() => {
+                alert("Payment Success! 30 Days Access granted.");
+                renderCustomerBooks();
+                openUnlockedBook(selectedBookForPay.id);
+            }, 1000);
         }
 
-        // 4. READER & AUDIO ENGINE WITH -10s / +10s SKIPPING
-        function openReaderModal(book) {
+        function openUnlockedBook(bookId) {
+            const book = books.find(b => b.id === bookId);
             selectedBookForRead = book;
             currentCharIndex = 0;
             document.getElementById('reader-title').innerText = book.title;
@@ -556,6 +496,13 @@
             }
         }
 
+        // INSTANT AUDIO & TEXT LANGUAGE SWITCHING
+        function onLanguageOrVoiceChange() {
+            if(window.speechSynthesis.speaking) {
+                speakTextFrom(currentCharIndex);
+            }
+        }
+
         function toggleAudio() {
             if ('speechSynthesis' in window) {
                 if (window.speechSynthesis.speaking) {
@@ -565,7 +512,7 @@
                     speakTextFrom(currentCharIndex);
                 }
             } else {
-                alert("Speech synthesis not supported in your browser.");
+                alert("Speech synthesis not supported in this browser.");
             }
         }
 
@@ -588,7 +535,6 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // 10-Second Skipping Logic (-10s / +10s)
         function skipAudio(seconds) {
             if (!selectedBookForRead) return;
             const charOffset = seconds * 15; 
@@ -597,32 +543,23 @@
             if (window.speechSynthesis.speaking) {
                 speakTextFrom(currentCharIndex);
             }
-            document.getElementById('audio-status').innerText = `${seconds > 0 ? '+' : ''}${seconds} Seconds Skipped`;
+            document.getElementById('audio-status').innerText = `${seconds > 0 ? '+' : ''}${seconds}s Skipped`;
         }
 
-        function shareBook() {
-            navigator.clipboard.writeText(window.location.href);
-            alert("Book share link copied to clipboard!");
-        }
+        // PERFECT SHARING SYSTEM (Native Web Share & Link Fallback)
+        function perfectShareBook() {
+            const shareData = {
+                title: selectedBookForRead.title,
+                text: `Check out this E-Book & Audio: ${selectedBookForRead.title}`,
+                url: window.location.href
+            };
 
-        // INSTANT AUTO-LANGUAGE SWITCHER (Within Seconds)
-        function changeInterfaceLanguage() {
-            const lang = document.getElementById('ui-lang').value;
-            const t = translations[lang] || translations['en'];
-
-            // Update UI elements instantly
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (t[key]) {
-                    el.innerText = t[key];
-                }
-            });
-
-            const searchInput = document.getElementById('search-input');
-            if(searchInput) searchInput.placeholder = t.search_placeholder;
-
-            // Refresh books list to update lock texts
-            renderCustomerBooks(searchInput ? searchInput.value : "");
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Book share link copied to clipboard!");
+            }
         }
     </script>
 </body>
