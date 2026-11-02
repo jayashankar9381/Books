@@ -303,7 +303,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: PHONEPE / UPI PAYMENT GATEWAY (MANDATORY BEFORE ACCESS) -->
+    <!-- MODAL 4: PHONEPE / UPI PAYMENT GATEWAY (WITH 'PAY' BUTTON) -->
     <div id="modal-payment" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 relative">
             <button onclick="closeModal('modal-payment')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -315,7 +315,7 @@
             
             <div class="space-y-2">
                 <a id="pay-link-anchor" href="#" target="_blank" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">
-                    <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Pay Amount (Open UPI Link)
+                    <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Pay (Open UPI Link)
                 </a>
             </div>
 
@@ -323,7 +323,7 @@
                 <span id="pay-amount-display" class="font-bold text-sm text-slate-800">Amount: ₹299</span>
             </div>
             <button onclick="confirmPaymentSuccess()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm shadow">
-                I Paid, Auto-Unlock Access
+                Pay
             </button>
         </div>
     </div>
@@ -335,7 +335,6 @@
         let pendingBookIdForPayment = null;
         let generatedOTP = null;
 
-        // Default Permanent Books with UPI Link
         let defaultBooks = [
             {
                 id: 'bk_101',
@@ -382,7 +381,7 @@
                         </div>
                         <div class="p-5 pt-0">
                             <button onclick="handleBookClick('${book.id}', '${book.price}', '${book.upiLink}')" class="w-full ${isUnlocked ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-purple-600 hover:bg-purple-700'} text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
-                                ${isUnlocked ? '<i class="fa-solid fa-book-open"></i> Open Book & Audio' : '<i class="fa-solid fa-indian-rupee-sign"></i> Pay Amount & Unlock'}
+                                ${isUnlocked ? '<i class="fa-solid fa-book-open"></i> Open Book & Audio' : '<i class="fa-solid fa-indian-rupee-sign"></i> Pay'}
                             </button>
                         </div>
                     </div>
@@ -397,7 +396,7 @@
             renderCustomerStore(filtered);
         }
 
-        // 2. STRICT PAYMENT & ACCESS CHECK (DO NOT OPEN UNTIL PAID)
+        // 2. STRICT PAYMENT CHECK
         function checkAccess(bookId) {
             if (!userAccessStore[bookId]) return false;
             const expiry = userAccessStore[bookId] + (30 * 24 * 60 * 60 * 1000);
@@ -411,10 +410,8 @@
 
         function handleBookClick(bookId, price, upiLink) {
             if (checkAccess(bookId)) {
-                // Already paid and within 30 days -> Open Reader
                 openBookReader(bookId);
             } else {
-                // NOT PAID -> Force Payment Gateway Popup, DO NOT OPEN BOOK
                 pendingBookIdForPayment = bookId;
                 document.getElementById('pay-amount-display').innerText = `Amount: ${price}`;
                 document.getElementById('pay-link-anchor').href = upiLink || '#';
@@ -433,8 +430,6 @@
                 closeModal('modal-payment');
                 renderCustomerStore();
                 alert("Payment Confirmed! 30-Day Access Auto-Unlocked.");
-                
-                // Automatically open book after payment success
                 openBookReader(pendingBookIdForPayment);
             }
         }
