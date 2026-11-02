@@ -14,7 +14,17 @@
         body { font-family: 'Inter', sans-serif; }
         .book-text { font-family: 'Merriweather', serif; }
         .highlight-word { background-color: #fef08a; border-radius: 4px; padding: 2px 4px; font-weight: 600; }
-        /* Security Watermark */
+        
+        /* Advanced Anti-Screenshot & DRM Blur Protection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        @media print {
+            body { display: none !important; }
+        }
         .security-watermark {
             pointer-events: none;
             position: fixed;
@@ -45,11 +55,11 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col select-none" oncontextmenu="return false;">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col" oncontextmenu="return false;">
 
     <!-- Watermark Overlay -->
     <div class="security-watermark">
-        <div class="watermark-text">SECURE DIGITAL STOREFRONT • 30-DAY ACCESS</div>
+        <div class="watermark-text">SECURE DIGITAL STOREFRONT • 30-DAY ACCESS • PROTECTED</div>
     </div>
 
     <!-- Security Warning Alert -->
@@ -57,7 +67,7 @@
         <i class="fa-solid fa-shield-halved text-2xl"></i>
         <div>
             <h4 class="font-bold text-sm">Security Protection Active!</h4>
-            <p class="text-xs text-red-100">Screenshots & Copying are restricted.</p>
+            <p class="text-xs text-red-100">Screenshots, printing & copying are strictly restricted.</p>
         </div>
     </div>
 
@@ -188,7 +198,7 @@
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <span class="text-xs text-slate-500 font-semibold uppercase">Security Status</span>
-                    <p class="text-sm font-bold text-emerald-600 mt-2"><i class="fa-solid fa-lock"></i> Permanent Data Storage & 30-Day Lock Active</p>
+                    <p class="text-sm font-bold text-emerald-600 mt-2"><i class="fa-solid fa-lock"></i> Permanent Data Storage & Anti-Screenshot Active</p>
                 </div>
             </div>
 
@@ -200,7 +210,7 @@
                         <thead class="bg-slate-50 text-xs text-slate-500 uppercase border-b border-slate-200">
                             <tr>
                                 <th class="p-3.5">Cover & Title</th>
-                                <th class="p-3.5">Price</th>
+                                <th class="p-3.5">Price & UPI Link</th>
                                 <th class="p-3.5">Access Unlocks</th>
                                 <th class="p-3.5 text-right">Action</th>
                             </tr>
@@ -256,7 +266,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: UPLOAD BOOK FORM -->
+    <!-- MODAL 3: UPLOAD BOOK FORM (WITH UPI LINK OPTION) -->
     <div id="modal-book-form" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeModal('modal-book-form')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -264,7 +274,7 @@
             <form onsubmit="saveNewBook(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase mb-1">Book Title *</label>
-                    <input type="text" id="form-title" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm">
+                    <input type="text" id="form-title" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm" placeholder="e.g. Master Your Mindset">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -274,12 +284,16 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase mb-1">Price (e.g. ₹299) *</label>
-                        <input type="text" id="form-price" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm">
+                        <input type="text" id="form-price" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm" placeholder="₹299">
                     </div>
                 </div>
                 <div>
+                    <label class="block text-xs font-bold uppercase mb-1">UPI / Payment Link (PhonePe / GPay URL) *</label>
+                    <input type="url" id="form-upi" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm" placeholder="https://pay.upilink.in/... or your payment gateway URL">
+                </div>
+                <div>
                     <label class="block text-xs font-bold uppercase mb-1">Book Content (Text for Reading & Audio) *</label>
-                    <textarea id="form-content" rows="6" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm font-serif"></textarea>
+                    <textarea id="form-content" rows="6" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm font-serif" placeholder="Paste book content here..."></textarea>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
                     <button type="button" onclick="closeModal('modal-book-form')" class="px-4 py-2 text-xs font-bold bg-slate-100 rounded-xl">Cancel</button>
@@ -289,7 +303,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: PHONEPE / UPI PAYMENT GATEWAY SIMULATION -->
+    <!-- MODAL 4: PHONEPE / UPI PAYMENT GATEWAY -->
     <div id="modal-payment" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 relative">
             <button onclick="closeModal('modal-payment')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -297,11 +311,15 @@
                 <i class="fa-solid fa-indian-rupee-sign"></i>
             </div>
             <h3 class="text-lg font-bold text-slate-800">PhonePe / UPI Secure Checkout</h3>
-            <p class="text-xs text-slate-500">Scan QR or complete payment to instantly unlock 30-day access.</p>
-            <div class="bg-slate-100 p-4 rounded-xl border flex flex-col items-center justify-center space-y-2">
-                <div class="w-36 h-36 bg-white border p-2 rounded flex items-center justify-center text-xs text-slate-400 font-mono">
-                    [ PhonePe QR Code ]
-                </div>
+            <p class="text-xs text-slate-500">Click below or use UPI link to complete payment and unlock 30-day access.</p>
+            
+            <div class="space-y-2">
+                <a id="pay-link-anchor" href="#" target="_blank" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">
+                    <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Open Direct UPI Payment Link
+                </a>
+            </div>
+
+            <div class="bg-slate-100 p-3 rounded-xl border flex flex-col items-center justify-center space-y-1">
                 <span id="pay-amount-display" class="font-bold text-sm text-slate-800">Amount: ₹299</span>
             </div>
             <button onclick="confirmPaymentSuccess()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-sm shadow">
@@ -317,19 +335,19 @@
         let pendingBookIdForPayment = null;
         let generatedOTP = null;
 
-        // Default Permanent Books
+        // Default Permanent Books with UPI Link
         let defaultBooks = [
             {
                 id: 'bk_101',
                 title: 'The Art of Mindful Living',
                 cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80',
                 price: '₹299',
+                upiLink: 'https://pay.upilink.in/sample',
                 unlockCount: 8,
                 content: `Welcome to The Art of Mindful Living. Mindfulness is the basic human ability to be fully present, aware of where we are and what we are doing. In this chapter, we explore inner peace, emotional clarity, and daily focus.`
             }
         ];
 
-        // Permanent LocalStorage Data Persistence
         let books = JSON.parse(localStorage.getItem('saved_storefront_books')) || defaultBooks;
         let userAccessStore = JSON.parse(localStorage.getItem('user_access_store') || '{}');
         let currentActiveBook = null;
@@ -338,6 +356,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             renderCustomerStore();
+            initAntiScreenshotGuards();
         });
 
         // 1. STOREFRONT
@@ -367,7 +386,7 @@
                                     📖 Open Book & Audio
                                 </button>
                             ` : `
-                                <button onclick="triggerPaymentModal('${book.id}', '${book.price}')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+                                <button onclick="triggerPaymentModal('${book.id}', '${book.price}', '${book.upiLink}')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-indian-rupee-sign"></i> Pay & Unlock (30 Days)
                                 </button>
                             `}
@@ -396,9 +415,10 @@
             return true;
         }
 
-        function triggerPaymentModal(bookId, price) {
+        function triggerPaymentModal(bookId, price, upiLink) {
             pendingBookIdForPayment = bookId;
             document.getElementById('pay-amount-display').innerText = `Amount: ${price}`;
+            document.getElementById('pay-link-anchor').href = upiLink || '#';
             document.getElementById('modal-payment').classList.remove('hidden');
         }
 
@@ -458,7 +478,6 @@
             }
         }
 
-        // Text-to-Speech Audio Player with 10s skip
         function toggleAudioPlayback() {
             if (isPlayingAudio) {
                 stopAudioPlayback();
@@ -493,9 +512,7 @@
             }
         }
 
-        function forwardAudio(sec) {
-            // Skips forward simulation
-        }
+        function forwardAudio(sec) {}
 
         function shareCurrentBook() {
             if (currentActiveBook) {
@@ -557,7 +574,10 @@
                             <img src="${b.cover}" class="w-10 h-12 object-cover rounded">
                             <span class="font-bold text-slate-800">${b.title}</span>
                         </td>
-                        <td class="p-3.5 font-semibold">${b.price}</td>
+                        <td class="p-3.5">
+                            <span class="font-semibold block">${b.price}</span>
+                            <a href="${b.upiLink}" target="_blank" class="text-xs text-indigo-600 underline line-clamp-1">${b.upiLink}</a>
+                        </td>
                         <td class="p-3.5 font-bold text-indigo-600">${b.unlockCount || 0} Unlocks</td>
                         <td class="p-3.5 text-right">
                             <button onclick="deleteBook('${b.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg font-bold text-xs"><i class="fa-solid fa-trash"></i> Delete</button>
@@ -570,6 +590,7 @@
         function openNewBookModal() {
             document.getElementById('form-title').value = '';
             document.getElementById('form-price').value = '';
+            document.getElementById('form-upi').value = '';
             document.getElementById('form-content').value = '';
             document.getElementById('preview-img').classList.add('hidden');
             document.getElementById('modal-book-form').classList.remove('hidden');
@@ -597,6 +618,7 @@
                 title: document.getElementById('form-title').value,
                 cover: uploadedCoverBase64 || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80',
                 price: document.getElementById('form-price').value,
+                upiLink: document.getElementById('form-upi').value,
                 content: document.getElementById('form-content').value,
                 unlockCount: 0
             };
@@ -605,7 +627,7 @@
             localStorage.setItem('saved_storefront_books', JSON.stringify(books));
             closeModal('modal-book-form');
             renderOwnerTable();
-            alert("Book Uploaded & Saved Permanently!");
+            alert("Book Uploaded & Saved Permanently with UPI Link!");
         }
 
         function deleteBook(id) {
@@ -614,6 +636,37 @@
                 localStorage.setItem('saved_storefront_books', JSON.stringify(books));
                 renderOwnerTable();
             }
+        }
+
+        // 5. ADVANCED ANTI-SCREENSHOT & DRM GUARDS
+        function initAntiScreenshotGuards() {
+            // Block PrintScreen, Ctrl+P, Ctrl+S, Ctrl+C, F12
+            document.addEventListener('keydown', (e) => {
+                if (
+                    e.key === 'PrintScreen' || 
+                    (e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'c' || e.key === 'u')) ||
+                    e.key === 'F12'
+                ) {
+                    e.preventDefault();
+                    triggerSecurityAlert();
+                }
+            });
+
+            // Blur content if user switches window/tab (Anti-spyware/screenshot trick)
+            window.addEventListener('blur', () => {
+                document.body.style.filter = 'blur(15px)';
+            });
+            window.addEventListener('focus', () => {
+                document.body.style.filter = 'none';
+            });
+        }
+
+        function triggerSecurityAlert() {
+            const alertBox = document.getElementById('security-alert');
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 3500);
         }
 
         function openForgotModal() {
