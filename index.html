@@ -109,7 +109,7 @@
                 </div>
                 <div class="flex items-center gap-2 text-xs text-slate-500">
                     <i class="fa-solid fa-lock text-indigo-600"></i>
-                    <span>Payment unlocks 30-Day instant access</span>
+                    <span>Payment required before opening book/audio</span>
                 </div>
             </div>
 
@@ -118,7 +118,7 @@
             </div>
         </section>
 
-        <!-- SECTION 2: READER & AUDIO PLAYER -->
+        <!-- SECTION 2: READER & AUDIO PLAYER (LOCKED UNTIL PAYMENT) -->
         <section id="reader-view" class="hidden space-y-4 max-w-4xl mx-auto">
             <button onclick="showCustomerView()" class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-indigo-600 font-medium bg-white px-4 py-2 rounded-lg border border-slate-200">
                 <i class="fa-solid fa-arrow-left"></i> Back to Storefront
@@ -198,7 +198,7 @@
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <span class="text-xs text-slate-500 font-semibold uppercase">Security Status</span>
-                    <p class="text-sm font-bold text-emerald-600 mt-2"><i class="fa-solid fa-lock"></i> Permanent Data Storage & Anti-Screenshot Active</p>
+                    <p class="text-sm font-bold text-emerald-600 mt-2"><i class="fa-solid fa-lock"></i> Strict Payment Lock & Anti-Screenshot Active</p>
                 </div>
             </div>
 
@@ -266,7 +266,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: UPLOAD BOOK FORM (WITH UPI LINK OPTION) -->
+    <!-- MODAL 3: UPLOAD BOOK FORM -->
     <div id="modal-book-form" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeModal('modal-book-form')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -289,7 +289,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase mb-1">UPI / Payment Link (PhonePe / GPay URL) *</label>
-                    <input type="url" id="form-upi" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm" placeholder="https://pay.upilink.in/... or your payment gateway URL">
+                    <input type="url" id="form-upi" required class="w-full px-3.5 py-2.5 border rounded-xl text-sm" placeholder="https://pay.upilink.in/...">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase mb-1">Book Content (Text for Reading & Audio) *</label>
@@ -303,27 +303,27 @@
         </div>
     </div>
 
-    <!-- MODAL 4: PHONEPE / UPI PAYMENT GATEWAY -->
+    <!-- MODAL 4: PHONEPE / UPI PAYMENT GATEWAY (MANDATORY BEFORE ACCESS) -->
     <div id="modal-payment" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 relative">
             <button onclick="closeModal('modal-payment')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
                 <i class="fa-solid fa-indian-rupee-sign"></i>
             </div>
-            <h3 class="text-lg font-bold text-slate-800">PhonePe / UPI Secure Checkout</h3>
-            <p class="text-xs text-slate-500">Click below or use UPI link to complete payment and unlock 30-day access.</p>
+            <h3 class="text-lg font-bold text-slate-800">Payment Required to Unlock</h3>
+            <p class="text-xs text-slate-500">Please complete the payment using the UPI link below to get 30 days instant access.</p>
             
             <div class="space-y-2">
                 <a id="pay-link-anchor" href="#" target="_blank" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">
-                    <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Open Direct UPI Payment Link
+                    <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Pay Amount (Open UPI Link)
                 </a>
             </div>
 
             <div class="bg-slate-100 p-3 rounded-xl border flex flex-col items-center justify-center space-y-1">
                 <span id="pay-amount-display" class="font-bold text-sm text-slate-800">Amount: ₹299</span>
             </div>
-            <button onclick="confirmPaymentSuccess()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-sm shadow">
-                I Have Paid (Simulate Success)
+            <button onclick="confirmPaymentSuccess()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm shadow">
+                I Paid, Auto-Unlock Access
             </button>
         </div>
     </div>
@@ -373,23 +373,17 @@
                             <div class="relative h-56 bg-slate-100 overflow-hidden">
                                 <img src="${book.cover}" class="w-full h-full object-cover">
                                 <span class="absolute top-3 right-3 bg-slate-900/80 text-white px-3 py-1 rounded-full text-xs font-bold">${book.price}</span>
-                                ${isUnlocked ? `<span class="absolute top-3 left-3 bg-emerald-600 text-white px-2.5 py-1 rounded-full text-[10px] font-bold"><i class="fa-solid fa-lock-open"></i> Unlocked</span>` : ''}
+                                ${isUnlocked ? `<span class="absolute top-3 left-3 bg-emerald-600 text-white px-2.5 py-1 rounded-full text-[10px] font-bold"><i class="fa-solid fa-lock-open"></i> Unlocked (30 Days)</span>` : `<span class="absolute top-3 left-3 bg-red-600 text-white px-2.5 py-1 rounded-full text-[10px] font-bold"><i class="fa-solid fa-lock"></i> Locked</span>`}
                             </div>
                             <div class="p-5 space-y-2">
                                 <h3 class="font-bold text-lg text-slate-800 line-clamp-1">${book.title}</h3>
-                                <p class="text-xs text-slate-500 line-clamp-2">${book.content}</p>
+                                <p class="text-xs text-slate-500 line-clamp-2">🔒 Complete payment to read text and listen to audio content.</p>
                             </div>
                         </div>
                         <div class="p-5 pt-0">
-                            ${isUnlocked ? `
-                                <button onclick="openBookReader('${book.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">
-                                    📖 Open Book & Audio
-                                </button>
-                            ` : `
-                                <button onclick="triggerPaymentModal('${book.id}', '${book.price}', '${book.upiLink}')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-indian-rupee-sign"></i> Pay & Unlock (30 Days)
-                                </button>
-                            `}
+                            <button onclick="handleBookClick('${book.id}', '${book.price}', '${book.upiLink}')" class="w-full ${isUnlocked ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-purple-600 hover:bg-purple-700'} text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+                                ${isUnlocked ? '<i class="fa-solid fa-book-open"></i> Open Book & Audio' : '<i class="fa-solid fa-indian-rupee-sign"></i> Pay Amount & Unlock'}
+                            </button>
                         </div>
                     </div>
                 `;
@@ -403,7 +397,7 @@
             renderCustomerStore(filtered);
         }
 
-        // 2. PAYMENT & ACCESS VALIDATION
+        // 2. STRICT PAYMENT & ACCESS CHECK (DO NOT OPEN UNTIL PAID)
         function checkAccess(bookId) {
             if (!userAccessStore[bookId]) return false;
             const expiry = userAccessStore[bookId] + (30 * 24 * 60 * 60 * 1000);
@@ -415,11 +409,17 @@
             return true;
         }
 
-        function triggerPaymentModal(bookId, price, upiLink) {
-            pendingBookIdForPayment = bookId;
-            document.getElementById('pay-amount-display').innerText = `Amount: ${price}`;
-            document.getElementById('pay-link-anchor').href = upiLink || '#';
-            document.getElementById('modal-payment').classList.remove('hidden');
+        function handleBookClick(bookId, price, upiLink) {
+            if (checkAccess(bookId)) {
+                // Already paid and within 30 days -> Open Reader
+                openBookReader(bookId);
+            } else {
+                // NOT PAID -> Force Payment Gateway Popup, DO NOT OPEN BOOK
+                pendingBookIdForPayment = bookId;
+                document.getElementById('pay-amount-display').innerText = `Amount: ${price}`;
+                document.getElementById('pay-link-anchor').href = upiLink || '#';
+                document.getElementById('modal-payment').classList.remove('hidden');
+            }
         }
 
         function confirmPaymentSuccess() {
@@ -432,7 +432,9 @@
 
                 closeModal('modal-payment');
                 renderCustomerStore();
-                alert("Payment Successful! 30-Day Instant Access Granted.");
+                alert("Payment Confirmed! 30-Day Access Auto-Unlocked.");
+                
+                // Automatically open book after payment success
                 openBookReader(pendingBookIdForPayment);
             }
         }
@@ -440,7 +442,7 @@
         // 3. READER & AUDIO MODES
         function openBookReader(bookId) {
             if (!checkAccess(bookId)) {
-                alert("Access Locked! Please complete payment first.");
+                alert("Access Denied! Please complete payment first.");
                 return;
             }
             currentActiveBook = books.find(b => b.id === bookId);
@@ -521,7 +523,7 @@
             }
         }
 
-        // 4. OWNER DASHBOARD & PERMANENT DELETE
+        // 4. OWNER DASHBOARD
         function showCustomerView() {
             stopAudioPlayback();
             document.getElementById('reader-view').classList.add('hidden');
@@ -640,7 +642,6 @@
 
         // 5. ADVANCED ANTI-SCREENSHOT & DRM GUARDS
         function initAntiScreenshotGuards() {
-            // Block PrintScreen, Ctrl+P, Ctrl+S, Ctrl+C, F12
             document.addEventListener('keydown', (e) => {
                 if (
                     e.key === 'PrintScreen' || 
@@ -652,7 +653,6 @@
                 }
             });
 
-            // Blur content if user switches window/tab (Anti-spyware/screenshot trick)
             window.addEventListener('blur', () => {
                 document.body.style.filter = 'blur(15px)';
             });
