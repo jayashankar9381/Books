@@ -3,563 +3,930 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Audio Book Studio & E-Book Store</title>
-    <!-- Tailwind CSS -->
+    <title>AudioBook & eBook Digital Storefront</title>
+    <!-- Tailwind CSS for Responsive Design -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .book-text { font-family: 'Merriweather', serif; }
+        .highlight-word { background-color: #fef08a; border-radius: 4px; padding: 2px 4px; font-weight: 600; }
+        /* Security Watermark for Screenshot Protection */
+        .security-watermark {
+            pointer-events: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(0,0,0,0.015),
+                rgba(0,0,0,0.015) 100px,
+                rgba(239, 68, 68, 0.03) 100px,
+                rgba(239, 68, 68, 0.03) 200px
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .watermark-text {
+            transform: rotate(-30deg);
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: rgba(239, 68, 68, 0.12);
+            text-transform: uppercase;
+            user-select: none;
+            white-space: nowrap;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col select-none" oncontextmenu="return false;">
 
-    <!-- Top Navigation Bar -->
-    <nav class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="showCustomerView()">
-                <i data-lucide="book-open-check" class="text-indigo-500 w-7 h-7"></i>
-                <h1 class="text-xl font-extrabold text-white">AI E-Book Studio</h1>
+    <!-- DRM Security Watermark Overlay -->
+    <div class="security-watermark">
+        <div class="watermark-text">PROTECTED CONTENT • DO NOT COPY • 30-DAY ACCESS</div>
+    </div>
+
+    <!-- Security Warning Banner (Appears on printscreen/copy attempt) -->
+    <div id="security-alert" class="hidden fixed top-4 right-4 z-50 bg-red-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 border border-red-500 animate-bounce">
+        <i class="fa-solid fa-shield-halved text-2xl"></i>
+        <div>
+            <h4 class="font-bold text-sm">Security Alert Active!</h4>
+            <p class="text-xs text-red-100">Screenshots & Copying are restricted to protect content copyright.</p>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showCustomerView()">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-book-open-reader text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-200 bg-clip-text text-transparent">AudioRead Digital</h1>
+                    <p class="text-xs text-slate-400 font-medium">30-Day Premium eBook & Audio Access</p>
+                </div>
             </div>
-            
-            <div class="flex gap-2">
-                <button onclick="showCustomerView()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                    <i data-lucide="store" class="w-4 h-4"></i> Customer Store
+
+            <div class="flex items-center gap-3">
+                <div id="user-badge" class="hidden md:flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-full text-xs font-medium text-slate-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Customer Mode (English)</span>
+                </div>
+                <button id="nav-login-btn" onclick="openLoginModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 shadow-md hover:shadow-indigo-500/20">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>Owner Dashboard</span>
                 </button>
-                <button onclick="showOwnerLogin()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-md shadow-indigo-600/30">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i> Owner Portal
+                <button id="nav-logout-btn" onclick="ownerLogout()" class="hidden bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white font-medium px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout Owner</span>
                 </button>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="max-w-5xl mx-auto p-4 md:p-8">
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
 
-        <!-- ==================== 1. OWNER LOGIN VIEW ==================== -->
-        <section id="owner-login-view" class="hidden max-w-md mx-auto bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
-            <div class="text-center space-y-2">
-                <h2 class="text-2xl font-bold text-white">Owner Portal Login</h2>
-                <p class="text-xs text-slate-400">Restricted access for store owner only</p>
+        <!-- SECTION 1: CUSTOMER STOREFRONT VIEW -->
+        <section id="customer-view" class="space-y-6">
+            <!-- Search & Filters -->
+            <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="relative w-full md:w-96">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="search-input" onkeyup="filterBooks()" placeholder="Search audiobooks & eBooks by title..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all">
+                </div>
+                <div class="flex items-center gap-2 w-full md:w-auto text-xs text-slate-500">
+                    <i class="fa-solid fa-lock text-indigo-600"></i>
+                    <span>All purchased items grant full 30-Day Instant Access</span>
+                </div>
             </div>
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Owner Email</label>
-                    <input type="email" id="owner-email" value="jayashankar9381@gmail.com" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">PIN / Password</label>
-                    <input type="password" id="owner-pass" value="9381" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-
-                <div class="flex justify-between items-center text-xs">
-                    <button onclick="openForgotModal()" class="text-indigo-400 hover:underline">Forgot Password?</button>
-                    <button onclick="showCustomerView()" class="text-slate-400 hover:underline">Back to Store</button>
-                </div>
-
-                <button onclick="handleOwnerLogin()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-sm shadow-lg shadow-indigo-600/30 transition">
-                    Login to Dashboard
-                </button>
+            <!-- Books Grid -->
+            <div id="books-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Book Cards dynamic injection via JS -->
             </div>
         </section>
 
-        <!-- FORGOT PASSWORD MODAL -->
-        <div id="forgot-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-            <div class="bg-slate-900 border border-slate-800 max-w-sm w-full p-6 rounded-3xl space-y-4">
-                <h3 class="text-lg font-bold text-white">Reset Owner Password</h3>
-                <p class="text-xs text-slate-400">OTP sent to <b>jayashankar9381@gmail.com</b> (OTP: <b>938100</b>)</p>
+        <!-- SECTION 2: READER & AUDIO PLAYER VIEW -->
+        <section id="reader-view" class="hidden space-y-4 max-w-4xl mx-auto">
+            <button onclick="showCustomerView()" class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-indigo-600 font-medium transition-colors bg-white px-4 py-2 rounded-lg border border-slate-200">
+                <i class="fa-solid fa-arrow-left"></i> Back to Storefront
+            </button>
 
-                <input type="text" id="otp-input" placeholder="Enter OTP (938100)" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
-                <input type="password" id="new-pin-1" placeholder="New Password / PIN" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
-                <input type="password" id="new-pin-2" placeholder="Confirm Password / PIN" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
-
-                <div class="flex gap-2">
-                    <button onclick="closeForgotModal()" class="w-1/2 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-xs font-bold">Cancel</button>
-                    <button onclick="resetPassword()" class="w-1/2 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold">Confirm PIN</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================== 2. OWNER DASHBOARD VIEW ==================== -->
-        <section id="owner-dashboard-view" class="hidden space-y-8">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-white">Owner Management Board</h2>
-                    <p class="text-xs text-slate-400">Upload, delete books and track reader counts</p>
-                </div>
-                <button onclick="showCustomerView()" class="px-3 py-1.5 bg-red-500/20 text-red-400 text-xs font-bold rounded-lg border border-red-500/30">Logout / Exit</button>
-            </div>
-
-            <!-- Upload Separate Book Form -->
-            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-4">
-                <h3 class="text-lg font-bold text-indigo-400 flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Publish New Separate Book
-                </h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Book Title (Unique)</label>
-                        <input type="text" id="book-title" placeholder="e.g. Tenali Raman Stories" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Price (₹)</label>
-                        <input type="number" id="book-price" placeholder="299" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Payment Gateway / PhonePe UPI Link / ID</label>
-                    <input type="text" id="book-paylink" placeholder="upi://pay?pa=owner@upi&pn=Owner" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Book Content / Text</label>
-                    <textarea id="book-content" rows="5" placeholder="Enter book contents here..." class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-sm"></textarea>
-                </div>
-
-                <button onclick="saveBook()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-sm shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
-                    <i data-lucide="save" class="w-4 h-4"></i> Save Separate Book
-                </button>
-            </div>
-
-            <!-- Published Books Analytics & Delete Action -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-bold text-white">Published Books Management</h3>
-                <div id="owner-books-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Dynamic Books with Delete Button -->
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== 3. CUSTOMER STORE VIEW ==================== -->
-        <section id="customer-store-view" class="space-y-6">
-            <!-- Language Selector Bar -->
-            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="globe" class="text-indigo-400 w-5 h-5"></i>
-                    <span class="text-xs font-bold text-slate-300">Interface Language:</span>
-                    <select id="ui-lang" onchange="changeInterfaceLanguage()" class="bg-slate-950 border border-slate-700 p-2 rounded-xl text-xs text-indigo-300 font-bold">
-                        <option value="en" selected>English (Default)</option>
-                        <option value="te">తెలుగు (Telugu)</option>
-                        <option value="hi">हिंदी (Hindi)</option>
-                        <option value="ta">தமிழ் (Tamil)</option>
-                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
-                        <option value="ml">മലയാളം (Malayalam)</option>
-                    </select>
-                </div>
-
-                <button onclick="googleLogin()" class="px-4 py-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-xl text-xs font-bold flex items-center gap-2">
-                    <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i> <span id="user-status">Sign in with Google</span>
-                </button>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="relative">
-                <i data-lucide="search" class="absolute left-4 top-3.5 text-slate-500 w-5 h-5"></i>
-                <input type="text" id="search-input" onkeyup="filterBooks()" placeholder="Search books by title..." class="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-
-            <!-- Customer Store Grid -->
-            <div id="customer-books-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Books Rendered Here -->
-            </div>
-        </section>
-
-        <!-- PAYMENT MODAL FOR CUSTOMER WITH PHONEPE / UPI AUTO-OPEN -->
-        <div id="payment-modal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">
-            <div class="bg-slate-900 border border-slate-800 max-w-sm w-full p-6 rounded-3xl space-y-4 text-center">
-                <i data-lucide="lock" class="w-12 h-12 text-amber-400 mx-auto"></i>
-                <h3 id="pay-book-title" class="text-lg font-bold text-white"></h3>
-                <p class="text-xs text-slate-400">Pay amount to get <b>30 Days Full Access</b> (PhonePe / Google Pay / UPI).</p>
-
-                <div class="text-3xl font-extrabold text-emerald-400" id="pay-book-price"></div>
-
-                <div class="flex flex-col gap-2 pt-2">
-                    <button onclick="triggerUPIPayment()" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-                        <i data-lucide="smartphone" class="w-4 h-4"></i> Pay via PhonePe / UPI (30 Days)
-                    </button>
-                    <button onclick="closePayModal()" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- UNLOCKED BOOK READER MODAL -->
-        <div id="reader-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 overflow-y-auto">
-            <div class="bg-slate-900 border border-slate-800 max-w-2xl w-full p-6 rounded-3xl space-y-6 my-8">
-                <!-- Header -->
-                <div class="flex justify-between items-start border-b border-slate-800 pb-3">
-                    <div>
-                        <h3 id="reader-title" class="text-xl font-bold text-indigo-400"></h3>
-                        <span id="validity-badge" class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold">30 Days Active Access</span>
-                    </div>
-                    <button onclick="closeReaderModal()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl">
-                        <i data-lucide="x" class="w-4 h-4"></i>
-                    </button>
-                </div>
-
-                <!-- Voice & Instant Language Switcher -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1">Audio Voice & Language:</label>
-                        <select id="audio-lang" onchange="onLanguageOrVoiceChange()" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-indigo-300 font-bold">
-                            <option value="te-IN" selected>తెలుగు (Telugu)</option>
-                            <option value="hi-IN">हिंदी (Hindi)</option>
-                            <option value="en-US">English (US)</option>
-                            <option value="ta-IN">தமிழ் (Tamil)</option>
-                            <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
-                            <option value="ml-IN">മലയാളം (Malayalam)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1">Customer Mode:</label>
-                        <div class="flex gap-2">
-                            <button id="btn-mode-read" onclick="setMode('read')" class="flex-1 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">📖 Reading</button>
-                            <button id="btn-mode-listen" onclick="setMode('listen')" class="flex-1 py-2 bg-slate-800 text-slate-400 rounded-xl text-xs font-bold">🎧 Listening</button>
+            <!-- Book Reader Card -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                <!-- Book Header -->
+                <div class="bg-slate-900 text-white p-6 flex flex-col md:flex-row items-center gap-6">
+                    <img id="reader-cover" src="" alt="Book Cover" class="w-28 h-36 object-cover rounded-lg shadow-md border-2 border-slate-700">
+                    <div class="text-center md:text-left space-y-2 flex-1">
+                        <span id="reader-badge" class="px-3 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-semibold uppercase tracking-wider">30-Day Active Access</span>
+                        <h2 id="reader-title" class="text-2xl font-bold"></h2>
+                        <div class="text-xs text-slate-400 flex flex-wrap gap-4 justify-center md:justify-start">
+                            <span><i class="fa-solid fa-calendar-check text-emerald-400 mr-1"></i> Access Expiry: <strong id="reader-expiry">30 Days Remaining</strong></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Text Scroll Box -->
-                <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 max-h-60 overflow-y-auto">
-                    <p id="reader-content-text" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"></p>
+                <!-- Mode Controls Bar -->
+                <div class="bg-slate-100 px-6 py-3 border-y border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                        <button id="mode-read-btn" onclick="switchReaderMode('read')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition">📖 Read Text Only</button>
+                        <button id="mode-listen-btn" onclick="switchReaderMode('listen')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition">🎧 Listen Audio Only</button>
+                        <button id="mode-both-btn" onclick="switchReaderMode('both')" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold transition">📖+🎧 Read & Listen Together</button>
+                    </div>
+
+                    <!-- Share Button -->
+                    <button onclick="shareBookCurrent()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-share-nodes text-indigo-600"></i> Share Book
+                    </button>
                 </div>
 
-                <!-- Controls with Skipping and Native Share -->
-                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
-                    <div class="flex items-center justify-center gap-4">
-                        <button onclick="skipAudio(-10)" class="p-3 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-xl text-xs font-bold flex items-center gap-1">
-                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> -10s
+                <!-- Audio Controller Box -->
+                <div id="audio-player-box" class="p-4 bg-indigo-50 border-b border-indigo-100 space-y-3">
+                    <div class="flex items-center justify-between text-xs font-semibold text-indigo-900">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-play text-indigo-600 animate-pulse text-base"></i>
+                            Audiobook Voice Player
+                        </span>
+                        <span id="audio-status" class="text-slate-500 font-normal">Ready to Play</span>
+                    </div>
+
+                    <!-- Skip Controls (-10s & +10s) -->
+                    <div class="flex items-center justify-center gap-4 py-2">
+                        <button onclick="rewindAudio(10)" title="Rewind 10 Seconds" class="w-12 h-12 bg-white hover:bg-indigo-600 hover:text-white text-indigo-700 rounded-full shadow border border-indigo-200 flex flex-col items-center justify-center transition active:scale-95">
+                            <i class="fa-solid fa-rotate-left text-sm"></i>
+                            <span class="text-[9px] font-bold -mt-0.5">10s</span>
                         </button>
 
-                        <button onclick="toggleAudio()" id="play-btn" class="p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-lg shadow-indigo-600/30">
-                            <i data-lucide="play" class="w-6 h-6"></i>
+                        <button id="main-play-btn" onclick="togglePlayAudio()" class="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg flex items-center justify-center transition transform active:scale-95">
+                            <i id="main-play-icon" class="fa-solid fa-play text-xl ml-0.5"></i>
                         </button>
 
-                        <button onclick="skipAudio(10)" class="p-3 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-xl text-xs font-bold flex items-center gap-1">
-                            +10s <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                        <button onclick="forwardAudio(10)" title="Forward 10 Seconds" class="w-12 h-12 bg-white hover:bg-indigo-600 hover:text-white text-indigo-700 rounded-full shadow border border-indigo-200 flex flex-col items-center justify-center transition active:scale-95">
+                            <i class="fa-solid fa-rotate-right text-sm"></i>
+                            <span class="text-[9px] font-bold -mt-0.5">10s</span>
                         </button>
                     </div>
 
-                    <div class="flex justify-between items-center pt-2 border-t border-slate-900">
-                        <span id="audio-status" class="text-xs text-indigo-400 font-semibold">Audio Player Ready</span>
-                        <button onclick="perfectShareBook()" class="px-3.5 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
-                            <i data-lucide="share-2" class="w-4 h-4"></i> Share Book
-                        </button>
+                    <!-- Progress Indicator -->
+                    <div class="space-y-1">
+                        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden cursor-pointer" onclick="seekAudioPercent(event)">
+                            <div id="audio-progress" class="bg-indigo-600 h-2 rounded-full w-0 transition-all"></div>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+                            <span id="time-current">00:00</span>
+                            <span id="time-total">00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Content Display Area -->
+                <div id="text-display-box" class="p-6 md:p-8 space-y-4 max-h-[500px] overflow-y-auto">
+                    <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">eBook Reading Content</h3>
+                    <div id="book-content-body" class="book-text text-base md:text-lg text-slate-700 leading-relaxed whitespace-pre-wrap">
+                        <!-- Book Text Body dynamically loaded -->
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- SECTION 3: OWNER DASHBOARD VIEW -->
+        <section id="owner-dashboard-view" class="hidden space-y-6">
+            <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield text-indigo-400"></i> Owner Control Panel
+                    </h2>
+                    <p class="text-xs text-indigo-200 mt-1">Logged in as: <strong class="text-white">jayashankar9381@gmail.com</strong></p>
+                </div>
+                <button onclick="openNewBookModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition active:scale-95">
+                    <i class="fa-solid fa-plus"></i> Add New Book (Publish Live)
+                </button>
+            </div>
+
+            <!-- Analytics Overview Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 font-semibold uppercase">Total Books Uploaded</span>
+                    <p id="stat-total-books" class="text-3xl font-extrabold text-slate-800 mt-1">0</p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 font-semibold uppercase">Active Purchased Users</span>
+                    <p id="stat-total-unlocks" class="text-3xl font-extrabold text-indigo-600 mt-1">0</p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 font-semibold uppercase">DRM Security Status</span>
+                    <p class="text-sm font-bold text-emerald-600 mt-2 flex items-center gap-2">
+                        <i class="fa-solid fa-lock"></i> 30-Day Auto Lock Active
+                    </p>
+                </div>
+            </div>
+
+            <!-- Books Management Table -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 border-b border-slate-200 font-bold text-sm text-slate-700 flex justify-between items-center">
+                    <span>Uploaded Books List</span>
+                    <span class="text-xs font-normal text-slate-500">Manage, edit, or view reader stats</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 text-xs text-slate-500 uppercase border-b border-slate-200">
+                            <tr>
+                                <th class="p-3.5">Cover & Title</th>
+                                <th class="p-3.5">Price</th>
+                                <th class="p-3.5">Payment Link</th>
+                                <th class="p-3.5">Customer Access</th>
+                                <th class="p-3.5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="owner-books-table-body">
+                            <!-- Dynamic Table Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
     </main>
 
+    <!-- MODAL 1: OWNER LOGIN MODAL -->
+    <div id="modal-login" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 relative">
+            <button onclick="closeModal('modal-login')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-bold">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800">Owner Secure Login</h3>
+                <p class="text-xs text-slate-500 mt-1">Enter registered Owner Gmail and Password</p>
+            </div>
+
+            <form onsubmit="handleOwnerLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Gmail Address</label>
+                    <input type="email" id="login-email" required value="jayashankar9381@gmail.com" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Password</label>
+                    <input type="password" id="login-password" required value="938119" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Default: jayashankar9381@gmail.com</span>
+                    <button type="button" onclick="openForgotModal()" class="text-indigo-600 font-semibold hover:underline">Forgot Password?</button>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition shadow-lg text-sm">
+                    Login to Owner Panel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: FORGOT PASSWORD OTP MODAL -->
+    <div id="modal-forgot" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 relative">
+            <button onclick="closeModal('modal-forgot')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Step 1: Send OTP -->
+            <div id="forgot-step-1" class="space-y-4">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-slate-800">Reset Password</h3>
+                    <p class="text-xs text-slate-500 mt-1">An OTP code will be sent to your Gmail</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Owner Email</label>
+                    <input type="email" id="forgot-email" value="jayashankar9381@gmail.com" readonly class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-semibold text-slate-700">
+                </div>
+                <button type="button" onclick="sendSimulatedOTP()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm shadow">
+                    Send OTP to Gmail
+                </button>
+            </div>
+
+            <!-- Step 2: Enter OTP & New Password -->
+            <div id="forgot-step-2" class="hidden space-y-4">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-slate-800">Enter OTP Code</h3>
+                    <p class="text-xs text-emerald-600 font-medium mt-1"><i class="fa-solid fa-envelope-circle-check"></i> Demo OTP code sent: <strong id="demo-otp-display">9381</strong></p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">4-Digit OTP Code</label>
+                    <input type="text" id="otp-input" placeholder="Enter OTP" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm text-center font-mono text-lg font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">New Password</label>
+                    <input type="password" id="new-password-input" placeholder="Enter new password" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm">
+                </div>
+                <button type="button" onclick="verifyOTPAndReset()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm shadow">
+                    Confirm & Update Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADD/EDIT BOOK MODAL (OWNER DIRECT UPLOADS) -->
+    <div id="modal-book-form" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 border border-slate-200 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('modal-book-form')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 id="book-modal-title" class="text-xl font-bold text-slate-800 mb-4">Add New Audiobook & eBook</h3>
+
+            <form onsubmit="saveBookSubmit(event)" class="space-y-4">
+                <input type="hidden" id="form-book-id">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Book Title *</label>
+                    <input type="text" id="form-title" required placeholder="e.g. Master Your Mindset" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Direct Cover Photo Upload *</label>
+                        <input type="file" id="form-cover-file" accept="image/*" onchange="previewCoverImage(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <img id="cover-preview" src="" class="hidden w-20 h-24 object-cover rounded-lg mt-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Direct Audio File (.mp3) Upload</label>
+                        <input type="file" id="form-audio-file" accept="audio/*" onchange="handleAudioUpload(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <span class="text-[10px] text-slate-400 block mt-1">If no audio is uploaded, browser Text-to-Speech voice will read automatically.</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Price Amount (₹ or $) *</label>
+                        <input type="text" id="form-price" required placeholder="e.g. ₹299" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Payment Link (UPI/GPay/Gateway) *</label>
+                        <input type="url" id="form-paylink" required placeholder="https://pay.upilink.in/..." class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">eBook Text Content (For Reading & TTS Audio) *</label>
+                    <textarea id="form-text-content" rows="6" required placeholder="Paste full eBook text content here..." class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm font-serif"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="closeModal('modal-book-form')" class="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg">Save & Publish Live</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: SHARE DIALOG MODAL -->
+    <div id="modal-share" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-200 relative text-center space-y-4">
+            <button onclick="closeModal('modal-share')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">Share Book Link</h3>
+            <p id="share-book-title" class="text-xs text-slate-500 font-medium"></p>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="shareViaWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white p-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp
+                </button>
+                <button onclick="shareViaInstagram()" class="bg-gradient-to-r from-purple-500 via-pink-500 to-amber-500 text-white p-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow">
+                    <i class="fa-brands fa-instagram text-lg"></i> Instagram
+                </button>
+            </div>
+            <button onclick="copyShareLink()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border border-slate-200">
+                <i class="fa-regular fa-copy"></i> Copy Direct Link
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
     <script>
-        let currentOwnerPin = "9381";
-        let books = JSON.parse(localStorage.getItem('published_books')) || [
+        // APP INITIAL STATE & PRESET DATA
+        let ownerPassword = "938119";
+        let isOwnerLoggedIn = false;
+        let generatedOTP = null;
+
+        // Sample Pre-loaded Books Data
+        let books = [
             {
-                id: 1,
-                title: "AI & Future Stories",
-                price: 199,
-                paylink: "upi://pay?pa=jayashankar9381@ybl&pn=Jayashankar&am=199&cu=INR",
-                content: "ఇది ఒక అద్భుతమైన AI ఆడియో పుస్తకం. మీరు దీనిని నేరుగా చదవవచ్చు మరియు ఏ భారతీయ భాషలోనైనా వెంటనే ఆటోమేటిక్‌గా వినవచ్చు.",
-                readersCount: 11
+                id: 'bk_1',
+                title: 'The Art of Mindful Living',
+                cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80',
+                price: '₹299',
+                payLink: 'https://pay.upilink.in/sample1',
+                audioSrc: '', // Empty means fallback to Browser Text-to-Speech
+                unlockCount: 14,
+                content: `Welcome to The Art of Mindful Living. Mindfulness is the basic human ability to be fully present, aware of where we are and what we are doing. In this chapter, we will explore how daily focus creates inner peace and clarity. Practice sitting quietly for ten minutes each morning.`
+            },
+            {
+                id: 'bk_2',
+                title: 'Success & Financial Freedom',
+                cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400&q=80',
+                price: '₹499',
+                payLink: 'https://pay.upilink.in/sample2',
+                audioSrc: '',
+                unlockCount: 29,
+                content: `Financial freedom is not about accumulating wealth endlessly. It is about acquiring control over your time and daily choices. Learn how to manage income, control unnecessary spending, and build long-term assets.`
             }
         ];
 
-        // 30 Days Expiry Access Manager Storage
-        let userPurchases = JSON.parse(localStorage.getItem('user_purchases')) || {};
+        // Access Locks stored locally: { bookId: timestampPurchased }
+        let userAccessStore = JSON.parse(localStorage.getItem('audio_access_store') || '{}');
+        let currentActiveBook = null;
+        let activeShareBook = null;
 
-        let selectedBookForPay = null;
-        let selectedBookForRead = null;
-        let currentCharIndex = 0;
+        // Speech & Audio Player Variables
+        let speechSynth = window.speechSynthesis;
+        let speechUtterance = null;
+        let customAudio = new Audio();
+        let isPlaying = false;
+        let audioProgressTimer = null;
+        let currentMode = 'both'; // 'read', 'listen', 'both'
 
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            showCustomerView();
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCustomerBooks();
+            initSecurityGuards();
+            checkUrlBookHash();
         });
 
-        function showCustomerView() {
-            window.speechSynthesis.cancel();
-            document.getElementById('owner-login-view').classList.add('hidden');
-            document.getElementById('owner-dashboard-view').classList.add('hidden');
-            document.getElementById('customer-store-view').classList.remove('hidden');
-            renderCustomerBooks();
-        }
+        // 1. RENDER CUSTOMER STOREFRONT
+        function renderCustomerBooks(filteredList = null) {
+            const grid = document.getElementById('books-grid');
+            const listToRender = filteredList || books;
+            grid.innerHTML = '';
 
-        function showOwnerLogin() {
-            window.speechSynthesis.cancel();
-            document.getElementById('customer-store-view').classList.add('hidden');
-            document.getElementById('owner-dashboard-view').classList.add('hidden');
-            document.getElementById('owner-login-view').classList.remove('hidden');
-        }
+            listToRender.forEach(book => {
+                const isUnlocked = checkAccessValid(book.id);
+                const expiryText = isUnlocked ? getAccessExpiryString(book.id) : '30-Day Access Lock';
 
-        function handleOwnerLogin() {
-            const email = document.getElementById('owner-email').value;
-            const pass = document.getElementById('owner-pass').value;
+                const cardHtml = `
+                    <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all border border-slate-200 overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-60 bg-slate-100 overflow-hidden group">
+                                <img src="${book.cover}" alt="${book.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <div class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold shadow">
+                                    ${book.price}
+                                </div>
+                                ${isUnlocked ? 
+                                    `<div class="absolute top-3 left-3 bg-emerald-600 text-white px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow">
+                                        <i class="fa-solid fa-lock-open"></i> Unlocked
+                                    </div>` : ''
+                                }
+                            </div>
 
-            if(email === "jayashankar9381@gmail.com" && pass === currentOwnerPin) {
-                alert("Login Success!");
-                document.getElementById('owner-login-view').classList.add('hidden');
-                document.getElementById('owner-dashboard-view').classList.remove('hidden');
-                renderOwnerBooks();
-            } else {
-                alert("Invalid Credentials!");
-            }
-        }
-
-        function openForgotModal() { document.getElementById('forgot-modal').classList.remove('hidden'); }
-        function closeForgotModal() { document.getElementById('forgot-modal').classList.add('hidden'); }
-
-        function resetPassword() {
-            const otp = document.getElementById('otp-input').value;
-            const p1 = document.getElementById('new-pin-1').value;
-            const p2 = document.getElementById('new-pin-2').value;
-
-            if(otp !== "938100") { alert("Invalid OTP!"); return; }
-            if(!p1 || p1 !== p2) { alert("PINs do not match!"); return; }
-
-            currentOwnerPin = p1;
-            alert("New PIN saved successfully!");
-            closeForgotModal();
-        }
-
-        // SAVE BOOK
-        function saveBook() {
-            const title = document.getElementById('book-title').value.trim();
-            const price = document.getElementById('book-price').value;
-            let paylink = document.getElementById('book-paylink').value.trim();
-            const content = document.getElementById('book-content').value.trim();
-
-            if(!title || !price || !content) {
-                alert("Please fill all required fields!");
-                return;
-            }
-
-            if(!paylink.startsWith("upi://")) {
-                paylink = `upi://pay?pa=jayashankar9381@ybl&pn=Jayashankar&am=${price}&cu=INR`;
-            }
-
-            const newBook = {
-                id: Date.now(),
-                title,
-                price,
-                paylink,
-                content,
-                readersCount: 0
-            };
-
-            books.push(newBook);
-            localStorage.setItem('published_books', JSON.stringify(books));
-
-            document.getElementById('book-title').value = "";
-            document.getElementById('book-price').value = "";
-            document.getElementById('book-paylink').value = "";
-            document.getElementById('book-content').value = "";
-
-            alert("Book saved successfully!");
-            renderOwnerBooks();
-        }
-
-        // OWNER DELETE BOOK ACTION & READERS TRACKING
-        function deleteBook(bookId) {
-            if(confirm("ఈ పుస్తకాన్ని ఖచ్చితంగా డిలీట్ చేయాలనుకుంటున్నారా?")) {
-                books = books.filter(b => b.id !== bookId);
-                localStorage.setItem('published_books', JSON.stringify(books));
-                renderOwnerBooks();
-                alert("పుస్తకం డిలీట్ చేయబడింది!");
-            }
-        }
-
-        function renderOwnerBooks() {
-            const list = document.getElementById('owner-books-list');
-            list.innerHTML = "";
-            books.forEach(b => {
-                list.innerHTML += `
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
-                        <div class="flex justify-between font-bold items-center">
-                            <span class="text-indigo-400 text-base">${b.title}</span>
-                            <span class="text-emerald-400">₹${b.price}</span>
+                            <div class="p-5 space-y-2">
+                                <h3 class="font-bold text-lg text-slate-800 leading-snug line-clamp-1">${book.title}</h3>
+                                <p class="text-xs text-slate-500 line-clamp-2">${book.content}</p>
+                            </div>
                         </div>
-                        <p class="text-xs text-slate-400 line-clamp-2">${b.content}</p>
-                        <div class="flex justify-between items-center pt-2 border-t border-slate-900">
-                            <span class="text-xs text-slate-400">Total Readers: <b class="text-white font-bold">${b.readersCount} customers</b></span>
-                            <button onclick="deleteBook(${b.id})" class="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-bold rounded-lg border border-red-500/30 flex items-center gap-1">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
+
+                        <div class="p-5 pt-0 space-y-3">
+                            ${isUnlocked ? `
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-center text-xs font-semibold text-emerald-800">
+                                    <i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Active: ${expiryText}
+                                </div>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button onclick="openBookReader('${book.id}', 'read')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-bold transition">📖 Read</button>
+                                    <button onclick="openBookReader('${book.id}', 'listen')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-bold transition">🎧 Listen</button>
+                                    <button onclick="openBookReader('${book.id}', 'both')" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-xs font-bold transition">Both</button>
+                                </div>
+                            ` : `
+                                <button onclick="simulatePaymentUnlock('${book.id}', '${book.payLink}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-credit-card"></i> Pay ${book.price} & Unlock (30 Days)
+                                </button>
+                            `}
+
+                            <button onclick="openShareModal('${book.id}')" class="w-full text-center text-xs text-slate-500 hover:text-indigo-600 font-medium pt-1 flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-share-nodes"></i> Share Book
                             </button>
                         </div>
                     </div>
                 `;
+                grid.innerHTML += cardHtml;
             });
-            lucide.createIcons();
         }
 
-        // 3. CUSTOMER STORE & 30 DAYS ACCESS VALIDITY CHECK
-        function isBookAccessActive(bookId) {
-            const expiryTimestamp = userPurchases[bookId];
-            if (!expiryTimestamp) return false;
-            return Date.now() < expiryTimestamp; // Active for 30 Days
-        }
-
-        function renderCustomerBooks(filterText = "") {
-            const grid = document.getElementById('customer-books-grid');
-            grid.innerHTML = "";
-            const filtered = books.filter(b => b.title.toLowerCase().includes(filterText.toLowerCase()));
-
-            filtered.forEach(b => {
-                const hasAccess = isBookAccessActive(b.id);
-                grid.innerHTML += `
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl space-y-4">
-                        <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-white text-lg">${b.title}</h4>
-                            <span class="text-emerald-400 font-extrabold text-sm">₹${b.price}</span>
-                        </div>
-
-                        ${hasAccess ? `
-                            <div class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-2xl text-center">
-                                <span class="text-xs text-emerald-400 font-bold">✅ 30 Days Active Subscription</span>
-                            </div>
-                            <button onclick="openUnlockedBook(${b.id})" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1 shadow-lg shadow-emerald-600/30">
-                                <i data-lucide="book-open" class="w-4 h-4"></i> Open & Read/Listen
-                            </button>
-                        ` : `
-                            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center space-y-1">
-                                <i data-lucide="lock" class="w-5 h-5 text-amber-400 mx-auto"></i>
-                                <p class="text-[11px] text-slate-500">Pay once to get 30 Days Full Access</p>
-                            </div>
-                            <button onclick="openPayModal(${b.id})" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1 shadow-lg shadow-indigo-600/30">
-                                <i data-lucide="credit-card" class="w-4 h-4"></i> Pay Amount (₹${b.price})
-                            </button>
-                        `}
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        }
-
+        // 2. SEARCH FILTER
         function filterBooks() {
-            renderCustomerBooks(document.getElementById('search-input').value);
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = books.filter(b => b.title.toLowerCase().includes(query) || b.content.toLowerCase().includes(query));
+            renderCustomerBooks(filtered);
         }
 
-        function openPayModal(bookId) {
-            selectedBookForPay = books.find(b => b.id === bookId);
-            document.getElementById('pay-book-title').innerText = selectedBookForPay.title;
-            document.getElementById('pay-book-price').innerText = `₹${selectedBookForPay.price}`;
-            document.getElementById('payment-modal').classList.remove('hidden');
-        }
-
-        function closePayModal() { document.getElementById('payment-modal').classList.add('hidden'); }
-
-        // AUTOMATIC PHONEPE / UPI OPEN & 30 DAYS ACCESS SET
-        function triggerUPIPayment() {
-            closePayModal();
-            // PhonePe / UPI Dynamic Intent
-            window.location.href = selectedBookForPay.paylink;
-
-            // 30 Days Expiry Timestamp setup (30 days * 24 * 60 * 60 * 1000)
+        // 3. 30-DAY ACCESS EXPIRY LOGIC
+        function checkAccessValid(bookId) {
+            if (!userAccessStore[bookId]) return false;
+            const purchasedTime = userAccessStore[bookId];
             const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
-            userPurchases[selectedBookForPay.id] = Date.now() + thirtyDaysMs;
-            localStorage.setItem('user_purchases', JSON.stringify(userPurchases));
+            const isExpired = (Date.now() - purchasedTime) > thirtyDaysMs;
+            if (isExpired) {
+                delete userAccessStore[bookId];
+                localStorage.setItem('audio_access_store', JSON.stringify(userAccessStore));
+                return false;
+            }
+            return true;
+        }
 
-            // Increase reader count for owner board
-            selectedBookForPay.readersCount += 1;
-            localStorage.setItem('published_books', JSON.stringify(books));
+        function getAccessExpiryString(bookId) {
+            if (!userAccessStore[bookId]) return '0 Days';
+            const purchasedTime = userAccessStore[bookId];
+            const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+            const diffMs = (purchasedTime + thirtyDaysMs) - Date.now();
+            const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            return `${daysLeft} Days Left`;
+        }
 
+        function simulatePaymentUnlock(bookId, payUrl) {
+            window.open(payUrl, '_blank');
+            // Auto unlock demo state
             setTimeout(() => {
-                alert("Payment Success! 30 Days Access granted.");
+                userAccessStore[bookId] = Date.now();
+                localStorage.setItem('audio_access_store', JSON.stringify(userAccessStore));
+                // Increment book analytics
+                const b = books.find(x => x.id === bookId);
+                if (b) b.unlockCount = (b.unlockCount || 0) + 1;
                 renderCustomerBooks();
-                openUnlockedBook(selectedBookForPay.id);
+                alert("Payment Confirmed! 30-Day Premium Access Activated for this book.");
             }, 1000);
         }
 
-        function openUnlockedBook(bookId) {
+        // 4. BOOK READER & TEXT-TO-SPEECH AUDIO CONTROLLER
+        function openBookReader(bookId, mode = 'both') {
+            if (!checkAccessValid(bookId)) {
+                alert("Access Locked! Please complete payment to get 30 days access.");
+                return;
+            }
+
             const book = books.find(b => b.id === bookId);
-            selectedBookForRead = book;
-            currentCharIndex = 0;
+            if (!book) return;
+
+            currentActiveBook = book;
+            document.getElementById('customer-view').classList.add('hidden');
+            document.getElementById('owner-dashboard-view').classList.add('hidden');
+            document.getElementById('reader-view').classList.remove('hidden');
+
+            document.getElementById('reader-cover').src = book.cover;
             document.getElementById('reader-title').innerText = book.title;
-            document.getElementById('reader-content-text').innerText = book.content;
-            document.getElementById('reader-modal').classList.remove('hidden');
+            document.getElementById('reader-expiry').innerText = getAccessExpiryString(book.id);
+            document.getElementById('book-content-body').innerText = book.content;
+
+            switchReaderMode(mode);
+            stopAudio();
         }
 
-        function closeReaderModal() {
-            window.speechSynthesis.cancel();
-            document.getElementById('reader-modal').classList.add('hidden');
+        function switchReaderMode(mode) {
+            currentMode = mode;
+            const textDisplay = document.getElementById('text-display-box');
+            const audioBox = document.getElementById('audio-player-box');
+
+            if (mode === 'read') {
+                textDisplay.classList.remove('hidden');
+                audioBox.classList.add('hidden');
+            } else if (mode === 'listen') {
+                textDisplay.classList.add('hidden');
+                audioBox.classList.remove('hidden');
+            } else { // 'both'
+                textDisplay.classList.remove('hidden');
+                audioBox.classList.remove('hidden');
+            }
         }
 
-        function setMode(mode) {
-            if(mode === 'read') {
-                document.getElementById('btn-mode-read').className = "flex-1 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold";
-                document.getElementById('btn-mode-listen').className = "flex-1 py-2 bg-slate-800 text-slate-400 rounded-xl text-xs font-bold";
-                window.speechSynthesis.cancel();
+        // Play/Pause Audio Toggle
+        function togglePlayAudio() {
+            if (isPlaying) {
+                stopAudio();
             } else {
-                document.getElementById('btn-mode-listen').className = "flex-1 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold";
-                document.getElementById('btn-mode-read').className = "flex-1 py-2 bg-slate-800 text-slate-400 rounded-xl text-xs font-bold";
-                toggleAudio();
+                startAudio();
             }
         }
 
-        // INSTANT AUDIO & TEXT LANGUAGE SWITCHING
-        function onLanguageOrVoiceChange() {
-            if(window.speechSynthesis.speaking) {
-                speakTextFrom(currentCharIndex);
+        function startAudio() {
+            if (!currentActiveBook) return;
+
+            if (currentActiveBook.audioSrc) {
+                // Play uploaded MP3 Audio
+                customAudio.src = currentActiveBook.audioSrc;
+                customAudio.play();
+                isPlaying = true;
+                updateAudioUI(true, "Playing Uploaded MP3 Audio");
+            } else {
+                // Fallback to Web Speech Synthesis Text-to-Speech
+                if (speechSynth.speaking) speechSynth.cancel();
+                
+                speechUtterance = new SpeechSynthesisUtterance(currentActiveBook.content);
+                speechUtterance.rate = 1.0;
+                
+                // Highlight text on boundary
+                speechUtterance.onboundary = (event) => {
+                    highlightWordAt(event.charIndex, event.charLength);
+                };
+                speechUtterance.onend = () => {
+                    stopAudio();
+                };
+
+                speechSynth.speak(speechUtterance);
+                isPlaying = true;
+                updateAudioUI(true, "AI Reading Text-to-Speech");
             }
         }
 
-        function toggleAudio() {
-            if ('speechSynthesis' in window) {
-                if (window.speechSynthesis.speaking) {
-                    window.speechSynthesis.cancel();
-                    document.getElementById('audio-status').innerText = "Audio Paused";
-                } else {
-                    speakTextFrom(currentCharIndex);
+        function stopAudio() {
+            if (speechSynth.speaking) speechSynth.cancel();
+            customAudio.pause();
+            isPlaying = false;
+            updateAudioUI(false, "Ready to Play");
+        }
+
+        function rewindAudio(seconds) {
+            if (currentActiveBook && currentActiveBook.audioSrc) {
+                customAudio.currentTime = Math.max(0, customAudio.currentTime - seconds);
+            } else if (speechSynth.speaking) {
+                // Restart Speech
+                startAudio();
+            }
+        }
+
+        function forwardAudio(seconds) {
+            if (currentActiveBook && currentActiveBook.audioSrc) {
+                customAudio.currentTime = Math.min(customAudio.duration, customAudio.currentTime + seconds);
+            }
+        }
+
+        function updateAudioUI(playing, statusText) {
+            const icon = document.getElementById('main-play-icon');
+            const status = document.getElementById('audio-status');
+            if (playing) {
+                icon.className = 'fa-solid fa-pause text-xl';
+                status.innerText = statusText;
+            } else {
+                icon.className = 'fa-solid fa-play text-xl ml-0.5';
+                status.innerText = statusText;
+            }
+        }
+
+        function highlightWordAt(charIndex, length) {
+            if (!currentActiveBook) return;
+            const text = currentActiveBook.content;
+            const before = text.substring(0, charIndex);
+            const word = text.substring(charIndex, charIndex + (length || 6));
+            const after = text.substring(charIndex + (length || 6));
+
+            document.getElementById('book-content-body').innerHTML = 
+                `${before}<span class="highlight-word">${word}</span>${after}`;
+        }
+
+        // 5. OWNER DASHBOARD & LOGIN MANAGEMENT
+        function showCustomerView() {
+            stopAudio();
+            document.getElementById('reader-view').classList.add('hidden');
+            document.getElementById('owner-dashboard-view').classList.add('hidden');
+            document.getElementById('customer-view').classList.remove('hidden');
+            renderCustomerBooks();
+        }
+
+        function openLoginModal() {
+            if (isOwnerLoggedIn) {
+                showOwnerDashboard();
+            } else {
+                document.getElementById('modal-login').classList.remove('hidden');
+            }
+        }
+
+        function handleOwnerLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+
+            if (email === 'jayashankar9381@gmail.com' && pass === ownerPassword) {
+                isOwnerLoggedIn = true;
+                closeModal('modal-login');
+                document.getElementById('nav-login-btn').classList.add('hidden');
+                document.getElementById('nav-logout-btn').classList.remove('hidden');
+                showOwnerDashboard();
+            } else {
+                alert("Invalid Owner Email or Password!");
+            }
+        }
+
+        function ownerLogout() {
+            isOwnerLoggedIn = false;
+            document.getElementById('nav-login-btn').classList.remove('hidden');
+            document.getElementById('nav-logout-btn').classList.add('hidden');
+            showCustomerView();
+        }
+
+        function showOwnerDashboard() {
+            document.getElementById('customer-view').classList.add('hidden');
+            document.getElementById('reader-view').classList.add('hidden');
+            document.getElementById('owner-dashboard-view').classList.remove('hidden');
+
+            renderOwnerStats();
+        }
+
+        function renderOwnerStats() {
+            document.getElementById('stat-total-books').innerText = books.length;
+            const totalUnlocks = books.reduce((acc, b) => acc + (b.unlockCount || 0), 0);
+            document.getElementById('stat-total-unlocks').innerText = totalUnlocks;
+
+            const tbody = document.getElementById('owner-books-table-body');
+            tbody.innerHTML = '';
+
+            books.forEach(b => {
+                const tr = `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="p-3.5 flex items-center gap-3">
+                            <img src="${b.cover}" class="w-10 h-12 object-cover rounded shadow">
+                            <span class="font-bold text-slate-800">${b.title}</span>
+                        </td>
+                        <td class="p-3.5 font-semibold text-slate-700">${b.price}</td>
+                        <td class="p-3.5"><a href="${b.payLink}" target="_blank" class="text-indigo-600 hover:underline text-xs line-clamp-1">${b.payLink}</a></td>
+                        <td class="p-3.5"><span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold rounded-full text-xs">${b.unlockCount || 0} Unlocks</span></td>
+                        <td class="p-3.5 text-right space-x-2">
+                            <button onclick="deleteBook('${b.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += tr;
+            });
+        }
+
+        // 6. DIRECT FILE UPLOADS (NO URL NEEDED)
+        function previewCoverImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('cover-preview');
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        let uploadedAudioData = '';
+        function handleAudioUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedAudioData = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function openNewBookModal() {
+            document.getElementById('form-book-id').value = '';
+            document.getElementById('form-title').value = '';
+            document.getElementById('form-price').value = '';
+            document.getElementById('form-paylink').value = '';
+            document.getElementById('form-text-content').value = '';
+            document.getElementById('cover-preview').classList.add('hidden');
+            uploadedAudioData = '';
+
+            document.getElementById('modal-book-form').classList.remove('hidden');
+        }
+
+        function saveBookSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('form-title').value;
+            const price = document.getElementById('form-price').value;
+            const payLink = document.getElementById('form-paylink').value;
+            const content = document.getElementById('form-text-content').value;
+            const coverPreviewSrc = document.getElementById('cover-preview').src;
+
+            const newBook = {
+                id: 'bk_' + Date.now(),
+                title: title,
+                cover: coverPreviewSrc || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80',
+                price: price,
+                payLink: payLink,
+                content: content,
+                audioSrc: uploadedAudioData,
+                unlockCount: 0
+            };
+
+            books.unshift(newBook);
+            closeModal('modal-book-form');
+            renderOwnerStats();
+            renderCustomerBooks();
+            alert("Book Saved & Published Live for Customers!");
+        }
+
+        function deleteBook(id) {
+            if (confirm("Are you sure you want to delete this book?")) {
+                books = books.filter(b => b.id !== id);
+                renderOwnerStats();
+                renderCustomerBooks();
+            }
+        }
+
+        // 7. FORGOT PASSWORD OTP WORKFLOW
+        function openForgotModal() {
+            closeModal('modal-login');
+            document.getElementById('forgot-step-1').classList.remove('hidden');
+            document.getElementById('forgot-step-2').classList.add('hidden');
+            document.getElementById('modal-forgot').classList.remove('hidden');
+        }
+
+        function sendSimulatedOTP() {
+            generatedOTP = "9381";
+            document.getElementById('demo-otp-display').innerText = generatedOTP;
+            document.getElementById('forgot-step-1').classList.add('hidden');
+            document.getElementById('forgot-step-2').classList.remove('hidden');
+        }
+
+        function verifyOTPAndReset() {
+            const enteredOTP = document.getElementById('otp-input').value;
+            const newPass = document.getElementById('new-password-input').value;
+
+            if (enteredOTP === generatedOTP && newPass.trim() !== '') {
+                ownerPassword = newPass;
+                closeModal('modal-forgot');
+                alert("Password Updated Successfully! Please login with your new password.");
+                openLoginModal();
+            } else {
+                alert("Invalid OTP or Password!");
+            }
+        }
+
+        // 8. SOCIAL MEDIA SHARING (WHATSAPP / INSTAGRAM)
+        function openShareModal(bookId) {
+            activeShareBook = books.find(b => b.id === bookId);
+            if (!activeShareBook) return;
+            document.getElementById('share-book-title').innerText = activeShareBook.title;
+            document.getElementById('modal-share').classList.remove('hidden');
+        }
+
+        function shareBookCurrent() {
+            if (currentActiveBook) openShareModal(currentActiveBook.id);
+        }
+
+        function shareViaWhatsApp() {
+            if (!activeShareBook) return;
+            const text = encodeURIComponent(`Check out this Audiobook & eBook "${activeShareBook.title}": ${window.location.origin}#${activeShareBook.id}`);
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+
+        function shareViaInstagram() {
+            copyShareLink();
+            alert("Book Direct Link Copied! You can now paste and share it on Instagram.");
+        }
+
+        function copyShareLink() {
+            if (!activeShareBook) return;
+            const shareUrl = `${window.location.origin}#${activeShareBook.id}`;
+            navigator.clipboard.writeText(shareUrl);
+            alert("Direct Share Link Copied to Clipboard!");
+        }
+
+        function checkUrlBookHash() {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && books.some(b => b.id === hash)) {
+                if (checkAccessValid(hash)) {
+                    openBookReader(hash, 'both');
                 }
-            } else {
-                alert("Speech synthesis not supported in this browser.");
             }
         }
 
-        function speakTextFrom(startIndex) {
-            window.speechSynthesis.cancel();
-            const fullText = selectedBookForRead.content;
-            const remainingText = fullText.substring(startIndex);
-            const lang = document.getElementById('audio-lang').value;
-
-            const utterance = new SpeechSynthesisUtterance(remainingText);
-            utterance.lang = lang;
-
-            utterance.onboundary = (event) => {
-                currentCharIndex = startIndex + event.charIndex;
-            };
-
-            utterance.onstart = () => { document.getElementById('audio-status').innerText = "Playing Audio..."; };
-            utterance.onend = () => { document.getElementById('audio-status').innerText = "Audio Finished"; };
-
-            window.speechSynthesis.speak(utterance);
+        // 9. SECURITY & DRM SCREENSHOT GUARDS
+        function initSecurityGuards() {
+            // Disable PrintScreen key & keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'PrintScreen' || (e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'c'))) {
+                    e.preventDefault();
+                    triggerSecurityAlert();
+                }
+            });
         }
 
-        function skipAudio(seconds) {
-            if (!selectedBookForRead) return;
-            const charOffset = seconds * 15; 
-            currentCharIndex = Math.max(0, currentCharIndex + charOffset);
-            
-            if (window.speechSynthesis.speaking) {
-                speakTextFrom(currentCharIndex);
-            }
-            document.getElementById('audio-status').innerText = `${seconds > 0 ? '+' : ''}${seconds}s Skipped`;
+        function triggerSecurityAlert() {
+            const alertBox = document.getElementById('security-alert');
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 3500);
         }
 
-        // PERFECT SHARING SYSTEM (Native Web Share & Link Fallback)
-        function perfectShareBook() {
-            const shareData = {
-                title: selectedBookForRead.title,
-                text: `Check out this E-Book & Audio: ${selectedBookForRead.title}`,
-                url: window.location.href
-            };
-
-            if (navigator.share) {
-                navigator.share(shareData).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert("Book share link copied to clipboard!");
-            }
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
         }
     </script>
 </body>
